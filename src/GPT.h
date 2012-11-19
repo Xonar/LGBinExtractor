@@ -1,0 +1,52 @@
+#ifndef GPT_H
+#define GPT_H
+
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <inttypes.h>
+#include <string.h>
+#include <sys/types.h>
+
+//GPT Header struct
+typedef struct _GPTHeader
+{
+    char signature[8];
+    uint32_t revision;
+    uint32_t hsize;
+    uint32_t crc;
+    uint32_t reserved;
+    uint64_t current_lba;
+    uint64_t backup_lba;
+    uint64_t first_lba;
+    uint64_t last_lba;
+    char disk_guid[16];
+    uint64_t pent_lba;
+    uint32_t pent_num;
+    uint32_t pent_size;
+    uint32_t crc_part;
+    char end[420];
+} GPTHeader;
+
+//Partition Entry
+typedef struct _GPTPartitionEntry {
+    char ptype_guid[16];
+    char upart_guid[16];
+    uint64_t first_lba;
+    uint64_t last_lba;
+    uint64_t att_flags;
+    char part_name[72];
+} GPTPartitionEntry;
+
+//READ
+
+GPTHeader readGPTHeader(FILE* f);
+GPTPartitionEntry readGPTPartitionEntry(FILE* f);
+void readGPTPartitionEntryArray(FILE* f,GPTPartitionEntry* out,int num);
+
+//PRINT
+void printGPTHeader(const GPTHeader h,FILE* f);
+void printGPTPartitionEntry(const GPTPartitionEntry pe,FILE* f);
+void printFullGPTInfo(const GPTHeader h,const GPTPartitionEntry* pe,FILE* f);
+
+#endif
