@@ -52,6 +52,7 @@ int displayGPT(const char* path)
     printFullGPTInfo(tmp, pes, stdout);
 
     free(pes);
+    fclose(f);
 
     return EXIT_SUCCESS;
 }
@@ -60,8 +61,6 @@ int displayAP(const char* path)
 {
     FILE* f = fopen(path, "r");
 
-
-
     //READ AP HEADER
     APHeader tmp = readAPHeader(f);
 
@@ -69,6 +68,52 @@ int displayAP(const char* path)
     printFullAPInfo(tmp,stdout);
 
     free(tmp.pent_arr);
+    fclose(f);
+
+    return EXIT_SUCCESS;
+}
+
+int splitBinFile(const char* path)
+{
+    FILE* f = fopen(path, "r");
+
+    //READ AP HEADER
+    puts("Reading AP Header...\n");
+    APHeader tmp = readAPHeader(f);
+    int i=0,j=0;
+
+    puts("Writing Files...");
+    //WRITE FILES
+    for(;i<tmp.pent_num;i++)
+    {
+        //WRITE FILE TO CUR DIR
+        char* name = calloc(512,sizeof(char));
+        snprintf(name,511,"%d-%s",tmp.pent_arr[i].pent_id,tmp.pent_arr[i].name);
+
+        FILE* out = fopen(name,"w");
+        fseek(f,tmp.pent_arr[i].file_off*512+0x100000,SEEK_SET);
+
+        printf("\tWriting File : %-20s",name);
+        fflush(stdout);
+
+        char buff[512];
+
+        for(j=0;j<tmp.pent_arr[i].file_size;j++)
+        {
+            //DO 512 BLOCK
+            fread(buff,sizeof(char),512,f);
+            fwrite(buff,sizeof(char),512,out);
+        }
+
+        fclose(out);
+
+        puts(" -- DONE --");
+    }
+
+    puts("\nFinished");
+
+    free(tmp.pent_arr);
+    fclose(f);
 
     return EXIT_SUCCESS;
 }

@@ -13,6 +13,7 @@ APHeader readAPHeader(FILE *f)
 
     //Read Magic Number into Header Directly
     fread(&out, sizeof(char) * 4, 1, f);
+    out.pent_num = 0;
 
     //Count how many Partition Entries
     //Might Break when there's 63 or more entries
