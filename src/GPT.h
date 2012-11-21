@@ -1,12 +1,9 @@
 #ifndef GPT_H
 #define GPT_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <inttypes.h>
+#include <stdio.h>
 #include <string.h>
-#include <sys/types.h>
 
 //GPT Header struct
 typedef struct _GPTHeader

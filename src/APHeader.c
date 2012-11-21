@@ -11,12 +11,11 @@ APHeader readAPHeader(FILE *f)
 {
     APHeader out;
 
-    //Read Magic Number into Header Directly
+    //READ MAGIC NUMBER
     fread(&out, sizeof(char) * 4, 1, f);
     out.pent_num = 0;
 
-    //Count how many Partition Entries
-    //Might Break when there's 63 or more entries
+    //COUNT AND ALLOCATE AP ENTRIES
     while(1)
     {
         uint64_t tmp;
@@ -31,6 +30,7 @@ APHeader readAPHeader(FILE *f)
 
     int i = 0;
 
+    //READ FILE OFFSET AND SIZE
     for(; i < out.pent_num; i++)
     {
         fread(&out.pent_arr[i].file_off, sizeof(uint32_t), 1, f);
@@ -39,6 +39,7 @@ APHeader readAPHeader(FILE *f)
 
     skipToNextLBA(f);
 
+    //READ DISK SIZE IGNORING FIRST ID REFERENCE
     for(i = 0; i < out.pent_num; i++)
     {
         //fread(&out.pent_arr[i].pent_id,sizeof(char),1,f);
@@ -49,6 +50,7 @@ APHeader readAPHeader(FILE *f)
 
     fseek(f,0x2200,SEEK_SET);
 
+    //READ ID AND NAME
     for(i = 0; i < out.pent_num; i++)
     {
         fread(&out.pent_arr[i].pent_id, sizeof(uint32_t), 1, f);

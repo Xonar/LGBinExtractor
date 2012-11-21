@@ -10,6 +10,7 @@
 
 GPTHeader readGPTHeader(FILE* f)
 {
+    //READ GOT HEADER INTO STRUCT
     GPTHeader out;
     fread(&out, sizeof(GPTHeader), 1, f);
     return out;
