@@ -1,0 +1,24 @@
+CHANGELOG
+
+18/12/2012
+	Fix possible cross-platform incompatibilaty
+	Small design changes to allow multiple bin formats
+	Added support for new bin format : 44 DD 55 AA
+	Better code formatting
+	Added more error checks
+	Fix not removing first arg correctly when binary is not correctly capatalized
+	Added Changelog :p
+
+20/11/2012 #2
+	Add Commandline Interface
+	Better code comments
+	Slight code improvements and format changes
+	Remove unnecesary inlcudes
+
+20/11/2012 #2
+	Write files in 512 blocks
+	Updated ReadMe
+
+19/11/2012
+	Initial Release
+	

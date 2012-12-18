@@ -19,8 +19,7 @@ int main(int argc, char* args[])
     //REMOVE FIRST ARG IF ITS EXECUTION PATH
     if(argc > 0)
     {
-        //WONT WORK IN ALL CASES
-        if(strcmp(PROG_NAME, args[0] + strlen(args[0]) - strlen(PROG_NAME)) == 0)
+        if(strcasecmp(PROG_NAME, args[0] + strlen(args[0]) - strlen(PROG_NAME)) == 0)
         {
             argc--;
             args++;
@@ -35,7 +34,7 @@ int main(int argc, char* args[])
         return EXIT_FAILURE;
     }
 
-    if(strcmp("-daph",args[0])==0)
+    if(strcmp("-daph", args[0]) == 0)
     {
         if(canOpenFile(args[1]))
         {
@@ -43,11 +42,11 @@ int main(int argc, char* args[])
         }
         else
         {
-            fprintf(stderr,"Couldn't open file : %s",args[1]);
+            fprintf(stderr, "Couldn't open file : %s", args[1]);
             return EXIT_FAILURE;
         }
     }
-    else if(strcmp("-dgpt",args[0])==0)
+    else if(strcmp("-dgpt", args[0]) == 0)
     {
         if(canOpenFile(args[1]))
         {
@@ -55,11 +54,11 @@ int main(int argc, char* args[])
         }
         else
         {
-            fprintf(stderr,"Couldn't open file : %s",args[1]);
+            fprintf(stderr, "Couldn't open file : %s", args[1]);
             return EXIT_FAILURE;
         }
     }
-    else if(strcmp("-extract",args[0])==0)
+    else if(strcmp("-extract", args[0]) == 0)
     {
         if(canOpenFile(args[1]))
         {
@@ -67,12 +66,11 @@ int main(int argc, char* args[])
         }
         else
         {
-            fprintf(stderr,"Couldn't open file : %s",args[1]);
+            fprintf(stderr, "Couldn't open file : %s", args[1]);
             return EXIT_FAILURE;
         }
     }
-    else
-        printUsage();
+    else printUsage();
 
     return EXIT_SUCCESS;
 }
@@ -98,6 +96,13 @@ int displayGPT(const char* path)
 
     //READ GPT HEADER
     GPTHeader tmp = readGPTHeader(f);
+
+    if(strcmp(tmp.signature, "EFI PART"))
+    {
+        fprintf(stderr, "Does not contain GPT at first data block");
+        return EXIT_FAILURE;
+    }
+
     GPTPartitionEntry* pes = (GPTPartitionEntry*) calloc(tmp.pent_num, sizeof(GPTPartitionEntry));
 
     readGPTPartitionEntryArray(f, pes, tmp.pent_num);
@@ -117,6 +122,12 @@ int displayAP(const char* path)
 
     //READ AP HEADER
     APHeader tmp = readAPHeader(f);
+
+    if(tmp.pent_num == 0)
+    {
+        fprintf(stderr, "No Data to Write!\n");
+        return -1;
+    }
 
     //PRINT AP HEADER
     printFullAPInfo(tmp, stdout);
@@ -176,7 +187,7 @@ int splitBinFile(const char* path)
 
 void printUsage()
 {
-    //Print Usage
+    //PRINT USAGE
     printf(
             "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s",
             "-daph file", "Display Header Information", "-dgpt file",
@@ -186,7 +197,7 @@ void printUsage()
 _Bool canOpenFile(const char* path)
 {
     //TODO Display Why file can't open
-    FILE* f = fopen(path,"r");
+    FILE* f = fopen(path, "r");
 
     _Bool ret = f != NULL;
 
@@ -195,6 +206,7 @@ _Bool canOpenFile(const char* path)
     return ret;
 }
 
+//PRINT HEX STRING FROM DATA
 void printHexString(FILE* f, const char* string, const int len)
 {
     int i = 1;
