@@ -148,7 +148,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
         fread(&out.pent_arr[i].file_size, sizeof(uint32_t), 1, f);
 
         //Skip 0 char
-        //fseek(f,4,SEEK_CUR);
+        fseek(f,4,SEEK_CUR);
     }
 
     //READ ID, NAME AND DISK SIZE
