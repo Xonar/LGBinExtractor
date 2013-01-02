@@ -1,5 +1,8 @@
 CHANGELOG
 
+02/01/2013
+	Change to C89 Standard for better cross-platform compatibilaty
+
 18/12/2012
 	Fix possible cross-platform incompatibilaty
 	Small design changes to allow multiple bin formats

@@ -13,10 +13,11 @@
 #include "APHeader.h"
 
 #include <dirent.h>
+#include <strings.h>
 
 int main(int argc, char* args[])
 {
-    //REMOVE FIRST ARG IF ITS EXECUTION PATH
+    /*REMOVE FIRST ARG IF ITS EXECUTION PATH*/
     if(argc > 0)
     {
         if(strcasecmp(PROG_NAME, args[0] + strlen(args[0]) - strlen(PROG_NAME)) == 0)
@@ -26,8 +27,8 @@ int main(int argc, char* args[])
         }
     }
 
-    //IF INVALID
-    //NOTE: ITS SET OUT LIKE THIS AND NOT argc != 2 E SO THATS ITS EASY TO CHANGE
+    /*IF INVALID
+     NOTE: ITS SET OUT LIKE THIS AND NOT argc != 2 E SO THATS ITS EASY TO CHANGE*/
     if(argc < 2 || argc > 2)
     {
         printUsage();
@@ -79,23 +80,28 @@ void skipToNextLBA(FILE* f)
 {
     uint16_t tmp = ftell(f);
     if(tmp == -1)
-    //Something Went Wrong
+    /*Something Went Wrong*/
     fprintf(stderr, "ERROR");
     else if(tmp % 512 > 0) fseek(f, 512 - tmp % 512, SEEK_CUR);
 }
 
 int displayGPT(const char* path)
 {
-    FILE* f = fopen(path, "r");
+    /*Declarations*/
+    FILE* f;
+    GPTHeader tmp;
+    GPTPartitionEntry* pes;
 
-    //SKIP AP INFO BLOCK
+    f = fopen(path, "r");
+
+    /*SKIP AP INFO BLOCK*/
     fseek(f, 0x100000, SEEK_SET);
 
-    //SKIP MBR
+    /*SKIP MBR*/
     fseek(f, 512, SEEK_CUR);
 
-    //READ GPT HEADER
-    GPTHeader tmp = readGPTHeader(f);
+    /*READ GPT HEADER*/
+     tmp = readGPTHeader(f);
 
     if(strcmp(tmp.signature, "EFI PART"))
     {
@@ -103,11 +109,11 @@ int displayGPT(const char* path)
         return EXIT_FAILURE;
     }
 
-    GPTPartitionEntry* pes = (GPTPartitionEntry*) calloc(tmp.pent_num, sizeof(GPTPartitionEntry));
+    pes = (GPTPartitionEntry*) calloc(tmp.pent_num, sizeof(GPTPartitionEntry));
 
     readGPTPartitionEntryArray(f, pes, tmp.pent_num);
 
-    //PRINT GPT HEADER
+    /*PRINT GPT HEADER*/
     printFullGPTInfo(tmp, pes, stdout);
 
     free(pes);
@@ -120,7 +126,7 @@ int displayAP(const char* path)
 {
     FILE* f = fopen(path, "r");
 
-    //READ AP HEADER
+    /*READ AP HEADER*/
     APHeader tmp = readAPHeader(f);
 
     if(tmp.pent_num == 0)
@@ -129,7 +135,7 @@ int displayAP(const char* path)
         return -1;
     }
 
-    //PRINT AP HEADER
+    /*PRINT AP HEADER*/
     printFullAPInfo(tmp, stdout);
 
     free(tmp.pent_arr);
@@ -140,43 +146,71 @@ int displayAP(const char* path)
 
 int splitBinFile(const char* path)
 {
-    FILE* f = fopen(path, "r");
-
-    //READ AP HEADER
-    puts("Reading AP Header...\n");
-    APHeader tmp = readAPHeader(f);
+    /*Declarations*/
+    FILE* f;
+    APHeader tmp;
     int i = 0, j = 0;
+
+    f = fopen(path, "r");
+
+    /*READ AP HEADER*/
+    puts("Reading AP Header...\n");
+    tmp = readAPHeader(f);
 
     puts("Writing Files...");
 
-    //WRITE FILES
+    /*WRITE FILES*/
     for(; i < tmp.pent_num; i++)
     {
-        //WRITE FILE TO CUR DIR
-        char* name = calloc(512, sizeof(char));
-        snprintf(name, 511, "%d-%s.img", tmp.pent_arr[i].pent_id, tmp.pent_arr[i].name);
+        /*WRITE FILE TO CUR DIR*/
 
-        FILE* out = fopen(name, "w");
+        /*Block Declarations*/
+        char* name;
+        FILE* out;
+        char buff[512];
+        int len = 0;
+
+        name = calloc(512, sizeof(char));
+
+        /*Add safe implementation Cross Platform change*/
+
+        /*%d cannot ever exceed 512 char due to int limit*/
+        sprintf(name, "%d",tmp.pent_arr[i].pent_id);
+
+        len = strlen(tmp.pent_arr[i].name) + 5 /* - + .img */ + 1 /* NULL Terminating*/ +strlen(name) ;
+
+        if(len>512)
+        {
+            /*Does not fit into buffer*/
+
+            /* resize buffer */
+            printf("Resizing File buffer to accommodate extreme file name!");
+
+            name = realloc(name,sizeof(char)*len);
+        }
+
+        sprintf(name, "%d-%s.img", tmp.pent_arr[i].pent_id, tmp.pent_arr[i].name);
+
+        out = fopen(name, "w");
         fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
 
         printf("\tWriting File : %-20s", name);
         fflush(stdout);
 
-        char buff[512];
-
         for(j = 0; j < tmp.pent_arr[i].file_size; j++)
         {
-            //DO 512 BLOCK
+            /*DO 512 BLOCK*/
             fread(buff, sizeof(char), 512, f);
             fwrite(buff, sizeof(char), 512, out);
         }
 
         fclose(out);
+        free(name);
 
         puts(" -- DONE --");
     }
 
-    //DONE
+    /*DONE*/
     puts("\nFinished");
 
     free(tmp.pent_arr);
@@ -187,7 +221,7 @@ int splitBinFile(const char* path)
 
 void printUsage()
 {
-    //PRINT USAGE
+    /*PRINT USAGE*/
     printf(
             "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s",
             "-daph file", "Display Header Information", "-dgpt file",
@@ -196,7 +230,7 @@ void printUsage()
 
 _Bool canOpenFile(const char* path)
 {
-    //TODO Display Why file can't open
+    /*TODO Display Why file can't open*/
     FILE* f = fopen(path, "r");
 
     _Bool ret = f != NULL;
@@ -206,14 +240,23 @@ _Bool canOpenFile(const char* path)
     return ret;
 }
 
-//PRINT HEX STRING FROM DATA
-void printHexString(FILE* f, const char* string, const int len)
+/*PRINT HEX STRING FROM DATA*/
+void printHexString_u(FILE* f, const unsigned char* string, const unsigned int len)
 {
     int i = 1;
     fprintf(f, "%02X", (unsigned char) string[0]);
 
     for(; i < len; i++)
         fprintf(f, " %02X", (unsigned char) string[i]);
+}
+
+void printHexString_s(FILE* f, const char* string, const unsigned int len)
+{
+    int i = 1;
+    fprintf(f, "%02X", (signed char) string[0]);
+
+    for(; i < len; i++)
+        fprintf(f, " %02X", (signed char) string[i]);
 }
 
 void printHexUINT64(FILE* f, uint64_t num)

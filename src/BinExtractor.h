@@ -8,7 +8,11 @@
 #ifndef BINEXTRACTOR_H
 #define BINEXTRACTOR_H
 
-#ifdef WINDOWS
+#if defined(_WIN32) || defined(_WIN64)
+
+/* I regret this bit*/
+#define strcasecmp _stricmp
+
 #define PROG_NAME "BinExtractor.exe"
 #else
 #define PROG_NAME "BinExtractor"
@@ -24,7 +28,8 @@ void printUsage();
 
 _Bool canOpenFile(const char* path);
 
-void printHexString(FILE* f, const char* string, const int len);
+void printHexString_u(FILE* f, const unsigned char* string, const unsigned int len);
+void printHexString_s(FILE* f, const char* string, const unsigned int len);
 void printHexUINT32(FILE* f, uint32_t num);
 void printHexUINT64(FILE* f, uint64_t num);
 

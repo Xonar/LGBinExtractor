@@ -10,7 +10,7 @@
 
 GPTHeader readGPTHeader(FILE* f)
 {
-    //READ GPT HEADER INTO STRUCT
+    /*READ GPT HEADER INTO STRUCT*/
     GPTHeader out;
     fread(&out, sizeof(GPTHeader), 1, f);
     return out;
@@ -18,14 +18,16 @@ GPTHeader readGPTHeader(FILE* f)
 
 GPTPartitionEntry readGPTPartitionEntry(FILE* f)
 {
+    /*Declarations*/
     GPTPartitionEntry out;
+    int i = 1,j=2;
+
     fread(&out, sizeof(GPTPartitionEntry), 1, f);
 
-    //Do poor mans convention from UTF16 to UTF8
-    //Ignoring all non ASCII characters
+    /*Do poor mans convention from UTF16 to UTF8
+      Ignoring all non ASCII characters*/
 
-    int i = 1;
-    int j = 2;
+
     for(; i < 32; i++, j += 2)
         out.part_name[i] = out.part_name[j];
 
@@ -38,8 +40,8 @@ void readGPTPartitionEntryArray(FILE* f, GPTPartitionEntry* out, int num)
 {
     fread(out, sizeof(GPTPartitionEntry), num, f);
 
-    //Do poor mans convention from UTF16 to UTF8
-    //Ignoring all non ASCII characters
+    /*Do poor mans convention from UTF16 to UTF8
+      Ignoring all non ASCII characters*/
 
     num--;
     for(; num >= 0; num--)
@@ -57,7 +59,7 @@ void printGPTHeader(const GPTHeader h, FILE* f)
 {
     fprintf(f, "GPT HEADER\n----------\n%-30s", "Signature");
 
-    printHexString(f, h.signature, 8);
+    printHexString_s(f, h.signature, 8);
 
     fprintf(f, "\n%-30s%" PRIu32 "\n"
     "%-30s%" PRIu32 "\n"
@@ -72,7 +74,7 @@ void printGPTHeader(const GPTHeader h, FILE* f)
     "%-30s", "Current Header LBA", h.current_lba, "Backup Header LBA", h.backup_lba,
             "First Usable LBA", h.first_lba, "Last Usable LBA", h.last_lba, "Disk GUID");
 
-    printHexString(f, h.disk_guid, 16);
+    printHexString_u(f, h.disk_guid, 16);
 
     fprintf(f, "\n%-30s%" PRIu64 "\n"
     "%-30s%" PRIu32 "\n"
@@ -89,11 +91,11 @@ void printGPTPartitionEntry(const GPTPartitionEntry pe, FILE* f)
 {
     fprintf(f, "PARTITION ENTRY\n---------------\n    %-26s", "Partition Type GUID");
 
-    printHexString(f, pe.ptype_guid, 16);
+    printHexString_u(f, pe.ptype_guid, 16);
 
     fprintf(f, "\n    %-26s", "Unique Partition GUID");
 
-    printHexString(f, pe.upart_guid, 16);
+    printHexString_u(f, pe.upart_guid, 16);
 
     fprintf(f, "\n    %-26s%" PRIu64 "\n"
     "    %-26s%" PRIu64 "\n"
@@ -104,20 +106,10 @@ void printGPTPartitionEntry(const GPTPartitionEntry pe, FILE* f)
 
 void printFullGPTInfo(const GPTHeader h, const GPTPartitionEntry* pe, FILE* f)
 {
-    printGPTHeader(h, f);
-
     int i = 0;
+    GPTPartitionEntry PE_NULL = {{0},{0},0,0,0,""};
 
-    //Auto Format is so ugly
-    //Need to fix this later
-    //Code still works
-
-    GPTPartitionEntry PE_NULL = (GPTPartitionEntry
-            )
-            {
-            { 0 },
-            { 0 }, 0, 0, 0,
-            { 0 } };
+    printGPTHeader(h, f);
 
     fprintf(f, "\nPARTITION ENTRIES\n-----------------\n");
 

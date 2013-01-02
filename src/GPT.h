@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-//GPT HEADER STRUCT
+/*GPT HEADER STRUCT*/
 typedef struct _GPTHeader
 {
     char signature[8];
@@ -17,7 +17,7 @@ typedef struct _GPTHeader
     uint64_t backup_lba;
     uint64_t first_lba;
     uint64_t last_lba;
-    char disk_guid[16];
+    unsigned char disk_guid[16];
     uint64_t pent_lba;
     uint32_t pent_num;
     uint32_t pent_size;
@@ -25,23 +25,23 @@ typedef struct _GPTHeader
     char end[420];
 } GPTHeader;
 
-//PARTITION ENTRY STRUCT
+/*PARTITION ENTRY STRUCT*/
 typedef struct _GPTPartitionEntry
 {
-    char ptype_guid[16];
-    char upart_guid[16];
+    unsigned char ptype_guid[16];
+    unsigned char upart_guid[16];
     uint64_t first_lba;
     uint64_t last_lba;
     uint64_t att_flags;
     char part_name[72];
 } GPTPartitionEntry;
 
-//READ
+/*READ*/
 GPTHeader readGPTHeader(FILE* f);
 GPTPartitionEntry readGPTPartitionEntry(FILE* f);
 void readGPTPartitionEntryArray(FILE* f, GPTPartitionEntry* out, int num);
 
-//DISPLAY
+/*DISPLAY*/
 void printGPTHeader(const GPTHeader h, FILE* f);
 void printGPTPartitionEntry(const GPTPartitionEntry pe, FILE* f);
 void printFullGPTInfo(const GPTHeader h, const GPTPartitionEntry* pe, FILE* f);

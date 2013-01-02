@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include "BinExtractor.h"
 
-//PARTITION ENTRY STRUCT
+/*PARTITION ENTRY STRUCT*/
 typedef struct _APPartitionEntry
 {
     char name[256];
@@ -24,21 +24,21 @@ typedef struct _APPartitionEntry
     uint32_t disk_off;
 } APPartitionEntry;
 
-//AP HEADER STRUCT
+/*AP HEADER STRUCT*/
 typedef struct _APHeader
 {
-    char magic[4];
+    unsigned char magic[4];
     int pent_num;
     APPartitionEntry* pent_arr;
 } APHeader;
 
-//READ
+/*READ*/
 APHeader readAPHeader(FILE *f);
 
 APHeader readAPHeaderA5A555AA(FILE *f);
 APHeader readAPHeader44DD55AA(FILE *f);
 
-//DISPLAY
+/*DISPLAY*/
 void printAPHeader(const APHeader h, FILE *f);
 void printAPPartitionEntry(const APPartitionEntry pe, FILE *f);
 void printFullAPInfo(const APHeader h, FILE *f);
