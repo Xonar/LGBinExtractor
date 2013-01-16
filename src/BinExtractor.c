@@ -223,7 +223,7 @@ void printUsage()
 {
     /*PRINT USAGE*/
     printf(
-            "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s",
+            "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n",
             "-daph file", "Display Header Information", "-dgpt file",
             "Display GPT Header Information", "-extract file", "Split Bin into Partitions");
 }

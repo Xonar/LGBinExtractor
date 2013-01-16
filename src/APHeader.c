@@ -46,7 +46,6 @@ APHeader readAPHeaderA5A555AA(FILE *f)
     out.magic[2] = 0x55;
     out.magic[3] = 0xAA;
 
-
     /*COUNT AND ALLOCATE AP ENTRIES*/
     while(1)
     {
@@ -93,8 +92,99 @@ APHeader readAPHeaderA5A555AA(FILE *f)
 
 APHeader readAPHeader44DD55AA(FILE *f)
 {
-    /*I did this with only the header data so it might not be 100%*/
+    APHeader out;
+    uint32_t tmp[4] =
+    { 0, 0, 0, 0 };
 
+    out.magic[0] = 0x44;
+    out.magic[1] = 0xDD;
+    out.magic[2] = 0x55;
+    out.magic[3] = 0xAA;
+
+    /*CHECK SECONDARY MAGIC NUMBERS*/
+
+    /*CHECK 1*/
+    fseek(f, 0x8, SEEK_SET);
+    fread(tmp, sizeof(uint32_t), 1, f);
+    if(tmp[0] == 0x8978f62b)
+    {
+        return readAPHeader44DD55AA_2BF67889(f);
+    }
+    else
+    {
+        printf("%x\n", tmp[0]);
+    }
+
+    /*CHECK 2*/
+    fseek(f, 0x600, SEEK_SET);
+    fread(tmp, sizeof(uint32_t), 1, f);
+    if(tmp[0] == 0xcc00bbaa)
+    {
+        return readAPHeader44DD55AA_AABB00CC(f);
+    }
+    else
+    {
+        fprintf(stderr, "Failed on secondary magic check : ");
+        printHexUINT32(stderr, tmp[0]);
+        fprintf(stderr, "\n");
+        return out;
+    }
+}
+
+APHeader readAPHeader44DD55AA_2BF67889(FILE *f)
+{
+    APHeader out;
+    uint32_t tmp[4] =
+    { 0, 0, 0, 0 };
+
+    out.magic[0] = 0x44;
+    out.magic[1] = 0xDD;
+    out.magic[2] = 0x55;
+    out.magic[3] = 0xAA;
+
+    fseek(f, 0x2000, SEEK_SET);
+    fread(tmp, sizeof(uint32_t), 1, f);
+    if(tmp[0] == 0xaa55ec33)
+    {
+        return readAPHeader44DD55AA_2BF67889_AA55EC33(f);
+    }
+    else
+    {
+        fprintf(stderr, "Failed on tertiary magic check : ");
+        printHexUINT32(stderr, tmp[0]);
+        fprintf(stderr, "\n");
+        return out;
+    }
+}
+
+APHeader readAPHeader44DD55AA_AABB00CC(FILE *f)
+{
+    APHeader out;
+    uint32_t tmp[4] =
+    { 0, 0, 0, 0 };
+
+    out.magic[0] = 0x44;
+    out.magic[1] = 0xDD;
+    out.magic[2] = 0x55;
+    out.magic[3] = 0xAA;
+
+    fseek(f, 0x2000, SEEK_SET);
+    fread(tmp, sizeof(uint32_t), 1, f);
+    if(tmp[0] == 0xaa55ec33)
+    {
+        return readAPHeader44DD55AA_AABB00CC_AA55EC33(f);
+    }
+    else
+    {
+        fprintf(stderr, "Failed on tertiary magic check : ");
+        printHexUINT32(stderr, tmp[0]);
+        fprintf(stderr, "\n");
+        return out;
+    }
+}
+
+APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f)
+{
     APHeader out;
     int i = 0;
     uint32_t tmp[4] =
@@ -105,27 +195,58 @@ APHeader readAPHeader44DD55AA(FILE *f)
     out.magic[2] = 0x55;
     out.magic[3] = 0xAA;
 
-    /*CHECK OTHER MAGIC NUMBERS*/
+    /*COUNT AND ALLOCATE AP ENTRIES*/
+    fseek(f, 0x2004, SEEK_SET);
 
-    fseek(f, 0x600, SEEK_SET);
-    fread(tmp, sizeof(uint32_t), 1, f);
-    if(tmp[0] != 0xcc00bbaa)
+    fread(tmp, sizeof(uint32_t), 4, f);
+
+    while(tmp[3] != 0xFFFFFFFF)
     {
-        fprintf(stderr, "Failed on secondary magic check : ");
-        printHexUINT32(stderr, tmp[0]);
-        fprintf(stderr, "\n");
-        return out;
+        out.pent_num++;
+        fread(tmp, sizeof(uint32_t), 4, f);
     }
 
-    fseek(f, 0x2000, SEEK_SET);
-    fread(tmp, sizeof(uint32_t), 1, f);
-    if(tmp[0] != 0xaa55ec33)
+    out.pent_arr = (APPartitionEntry*) calloc(out.pent_num, sizeof(APPartitionEntry));
+
+    /*READ DISK OFFSET,FILE OFFSET, FILE SIZE*/
+    fseek(f, 0x2010, SEEK_SET);
+
+    for(; i < out.pent_num; i++)
     {
-        fprintf(stderr, "Failed on tertiary magic check : ");
-        printHexUINT32(stderr, tmp[0]);
-        fprintf(stderr, "\n");
-        return out;
+        out.pent_arr[i].pent_id = i;
+        fread(&out.pent_arr[i].disk_off, sizeof(uint32_t), 1, f);
+        fread(&out.pent_arr[i].file_off, sizeof(uint32_t), 1, f);
+        fread(&out.pent_arr[i].file_size, sizeof(uint32_t), 1, f);
+
+        /*Skip 0 char*/
+        fseek(f, 4, SEEK_CUR);
     }
+
+    /*READ NAME*/
+    fseek(f, 0x4220, SEEK_SET);
+
+    for(i = 0; i < out.pent_num; i++)
+    {
+        fread(out.pent_arr[i].name, sizeof(char), 32, f);
+        out.pent_arr[i].disk_size = 0xffffffff;
+    }
+
+    return out;
+}
+
+APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f)
+{
+    /*TODO Add Magic check at 0x4000 for 0x3037394556781234*/
+
+    APHeader out;
+    int i = 0;
+    uint32_t tmp[4] =
+    { 0, 0, 0, 0 };
+
+    out.magic[0] = 0x44;
+    out.magic[1] = 0xDD;
+    out.magic[2] = 0x55;
+    out.magic[3] = 0xAA;
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     fseek(f, 0x2004, SEEK_SET);
@@ -150,7 +271,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
         fread(&out.pent_arr[i].file_size, sizeof(uint32_t), 1, f);
 
         /*Skip 0 char*/
-        fseek(f,4,SEEK_CUR);
+        fseek(f, 4, SEEK_CUR);
     }
 
     /*READ ID, NAME AND DISK SIZE*/
@@ -183,9 +304,13 @@ void printAPPartitionEntry(const APPartitionEntry pe, FILE *f)
             "    %-26s%s\n"
             "    %-26s%d\n"
             "    %-26s%" PRIu32 "\n"
-    "    %-26s%" PRIu32 "\n"
     "    %-26s%" PRIu32 "\n", "Data Block Name", pe.name, "Data Block ID", pe.pent_id,
-            "Size on File", pe.file_size, "File Offset", pe.file_off, "Size on Disk", pe.disk_size);
+            "Size on File", pe.file_size, "File Offset", pe.file_off);
+
+    if(pe.disk_size != 0xFFFFFFFF)
+    {
+        fprintf(f, "    %-26s%" PRIu32 "\n", "Size on Disk", pe.disk_size);
+    }
 
     if(pe.disk_off != 0xFFFFFFFF)
     {

@@ -1,5 +1,10 @@
 CHANGELOG
 
+16/01/2013
+	Add Test support for the LG Optimus G.
+	Improved Magic Checking.
+	Change it a Bit to more Easily Support Mutliple Magic Numbers.
+
 02/01/2013
 	Change to C89 Standard for better cross-platform compatibilaty
 
