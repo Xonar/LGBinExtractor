@@ -1,7 +1,10 @@
 CHANGELOG
 
-16/01/2013
-	Add Test support for the LG Optimus G.
+16/01/2013 #2
+	Add support for Sprint Optimus G
+
+16/01/2013 #1
+	Add Test support for the AT&T Optimus G.
 	Improved Magic Checking.
 	Change it a Bit to more Easily Support Mutliple Magic Numbers.
 

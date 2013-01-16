@@ -41,7 +41,7 @@ APHeader readAPHeader44DD55AA_2BF67889(FILE *f);
 APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f);
 APHeader readAPHeader44DD55AA_AABB00CC(FILE *f);
 APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f);
-APHeader readAPHeader44DD55AA_2BF67889(FILE *f);
+APHeader readAPHeader44DD55AA_EAC86250(FILE *f);
 
 /*DISPLAY*/
 void printAPHeader(const APHeader h, FILE *f);

@@ -90,6 +90,20 @@ APHeader readAPHeaderA5A555AA(FILE *f)
     return out;
 }
 
+APHeader readAPHeader44DD55AA_EAC86250(FILE *f)
+{
+    /*Identical don't know why the different magic number*/
+    return readAPHeader44DD55AA_2BF67889(f);
+}
+
+/*TEST*/
+APHeader readAPHeader44DD55AA_948B8349(FILE *f)
+{
+    /*A Guess*/
+    printf("Warning : I Guessed this format!\n");
+    return readAPHeader44DD55AA_2BF67889(f);
+}
+
 APHeader readAPHeader44DD55AA(FILE *f)
 {
     APHeader out;
@@ -110,9 +124,13 @@ APHeader readAPHeader44DD55AA(FILE *f)
     {
         return readAPHeader44DD55AA_2BF67889(f);
     }
-    else
+    else if(tmp[0] == 0x5062c8ea)
     {
-        printf("%x\n", tmp[0]);
+        return readAPHeader44DD55AA_EAC86250(f);
+    }
+    else if(tmp[0] == 0x49838b94)
+    {
+        return readAPHeader44DD55AA_948B8349(f);
     }
 
     /*CHECK 2*/
