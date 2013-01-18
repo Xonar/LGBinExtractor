@@ -1,5 +1,9 @@
 CHANGELOG
 
+18/01/2013 #3
+	Fix: Segfault when opening file that can't be opened
+	Improved Comments and Console Output
+
 18/01/2013 #2
 	Fix: Merge Blocks when Same Name
 

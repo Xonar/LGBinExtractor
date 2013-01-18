@@ -17,7 +17,7 @@ APHeader readAPHeader(FILE *f)
     /*READ MAGIC NUMBER*/
     fread(&out, sizeof(char) * 4, 1, f);
 
-    /*Split into Magic Numbers*/
+    /*PASS TO CORRECT FUNCTION BASED ON MAGIC NUMBER*/
     switch(*magic)
     {
         case 0xaa55a5a5:
@@ -92,15 +92,13 @@ APHeader readAPHeaderA5A555AA(FILE *f)
 
 APHeader readAPHeader44DD55AA_EAC86250(FILE *f)
 {
-    /*Identical don't know why the different magic number*/
+    /*IDENTICAL FORMAT WITH DIFFERENT MAGIC NUMBER*/
     return readAPHeader44DD55AA_2BF67889(f);
 }
 
-/*TEST*/
 APHeader readAPHeader44DD55AA_948B8349(FILE *f)
 {
-    /*A Guess*/
-    printf("Warning : I Guessed this format!\n");
+    /*IDENTICAL FORMAT WITH DIFFERENT MAGIC NUMBER*/
     return readAPHeader44DD55AA_2BF67889(f);
 }
 
@@ -115,7 +113,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     out.magic[2] = 0x55;
     out.magic[3] = 0xAA;
 
-    /*CHECK SECONDARY MAGIC NUMBERS*/
+    /*CHECK MAGIC NUMBERS*/
 
     /*CHECK 1*/
     fseek(f, 0x8, SEEK_SET);
@@ -147,11 +145,16 @@ APHeader readAPHeader44DD55AA(FILE *f)
     {
         return readAPHeader44DD55AA_AABB00CC(f);
     }
-    else
+    else if(tmp[0] != 0xffffffff)
     {
         fprintf(stderr, "Unknown Magic Number at 0x600 : ");
         printHexUINT32(stderr, tmp[0]);
         fprintf(stderr, "\n");
+        return out;
+    }
+    else
+    {
+        fprintf(stderr, "Did not find corresponding Magic Number!\n");
         return out;
     }
 }
@@ -167,17 +170,24 @@ APHeader readAPHeader44DD55AA_2BF67889(FILE *f)
     out.magic[2] = 0x55;
     out.magic[3] = 0xAA;
 
+    /*CHECK MAGIC NUMBERS*/
+
     fseek(f, 0x2000, SEEK_SET);
     fread(tmp, sizeof(uint32_t), 1, f);
     if(tmp[0] == 0xaa55ec33)
     {
         return readAPHeader44DD55AA_2BF67889_AA55EC33(f);
     }
-    else
+    else if(tmp[0] != 0xffffffff)
     {
         fprintf(stderr, "Unknown Magic Number at 0x2000 : ");
         printHexUINT32(stderr, tmp[0]);
         fprintf(stderr, "\n");
+        return out;
+    }
+    else
+    {
+        fprintf(stderr, "Did not find corresponding Magic Number!\n");
         return out;
     }
 }
@@ -193,17 +203,24 @@ APHeader readAPHeader44DD55AA_AABB00CC(FILE *f)
     out.magic[2] = 0x55;
     out.magic[3] = 0xAA;
 
+    /*CHECK MAGIC NUMBERS*/
+
     fseek(f, 0x2000, SEEK_SET);
     fread(tmp, sizeof(uint32_t), 1, f);
     if(tmp[0] == 0xaa55ec33)
     {
         return readAPHeader44DD55AA_AABB00CC_AA55EC33(f);
     }
-    else
+    else if(tmp[0] != 0xffffffff)
     {
-        fprintf(stderr, "Unkown Magic Number at 0x2000 : ");
+        fprintf(stderr, "Unknown Magic Number at 0x2000 : ");
         printHexUINT32(stderr, tmp[0]);
         fprintf(stderr, "\n");
+        return out;
+    }
+    else
+    {
+        fprintf(stderr, "Did not find corresponding Magic Number!\n");
         return out;
     }
 }
@@ -261,7 +278,7 @@ APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f)
 
 APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f)
 {
-    /*TODO Add Magic check at 0x4000 for 0x3037394556781234*/
+    /*TODO Read Device Name @ 0x4000*/
 
     APHeader out;
     int i = 0;

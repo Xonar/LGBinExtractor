@@ -14,6 +14,7 @@
 
 #include <dirent.h>
 #include <strings.h>
+#include <errno.h>
 
 int main(int argc, char* args[])
 {
@@ -43,7 +44,6 @@ int main(int argc, char* args[])
         }
         else
         {
-            fprintf(stderr, "Couldn't open file : %s", args[1]);
             return EXIT_FAILURE;
         }
     }
@@ -55,7 +55,6 @@ int main(int argc, char* args[])
         }
         else
         {
-            fprintf(stderr, "Couldn't open file : %s", args[1]);
             return EXIT_FAILURE;
         }
     }
@@ -67,7 +66,6 @@ int main(int argc, char* args[])
         }
         else
         {
-            fprintf(stderr, "Couldn't open file : %s", args[1]);
             return EXIT_FAILURE;
         }
     }
@@ -154,31 +152,31 @@ int splitBinFile(const char* path)
     f = fopen(path, "r");
 
     /*READ AP HEADER*/
-    puts("Reading AP Header...\n");
+    puts("Reading AP Header...");
     tmp = readAPHeader(f);
 
-    /*Generate Part Data for constructing files*/
+    /*GENERATE PART DATA*/
     parts = calloc(tmp.pent_num, sizeof(int));
     for(; i < tmp.pent_num; i++)
         parts[i] = 1;
 
-    /*Check for duplicate names in blocks*/
+    /*CHECK FOR DUPLICATE NAMES OF PARTITION ENTRIES*/
     for(i = 1; i < tmp.pent_num; i++)
     {
         if(strcmp(tmp.pent_arr[i].name, tmp.pent_arr[i - 1].name) == 0)
         {
             char c;
 
-            printf("There are Data Blocks with duplicate names.\n"
+            printf("\nThere are Data Blocks with duplicate names.\n"
                     "Do you want to merge them? Y/N : ");
 
 
             c = getchar();
-            /* TODO to allow further input - discard trailing chars*/
+            while(getchar()!='\n');
 
             if(c == 'y' || c == 'Y')
             {
-                /*Update part data*/
+                /*UPDATE PART DATA*/
                 j = i - 1;
                 parts[j]++;
                 i++;
@@ -194,13 +192,12 @@ int splitBinFile(const char* path)
         }
     }
 
-    puts("Writing Files...");
+    puts("\nWriting Files...");
 
     /*WRITE FILES*/
     for(i = 0; i < tmp.pent_num; i++)
     {
         /*WRITE FILE TO CUR DIR*/
-        /*Block Declarations*/
         char* name,buff[512];
         FILE* out;
         int len = 0,start;
@@ -217,13 +214,13 @@ int splitBinFile(const char* path)
 
         if(len > 512)
         {
-            /*Does not fit into buffer*/
-
-            /* resize buffer */
-            printf("Resizing File buffer to accommodate extreme file name!");
+            /*RESIZE BUFFER*/
+            printf("Resizing File buffer to accommodate extreme file name!\n");
 
             name = realloc(name, sizeof(char) * len);
         }
+
+        /*END - Add safe implementation Cross Platform change*/
 
         sprintf(name, "%d-%s.img", tmp.pent_arr[i].pent_id, tmp.pent_arr[i].name);
 
@@ -289,13 +286,19 @@ void printUsage()
 
 _Bool canOpenFile(const char* path)
 {
-    /*TODO Display Why file can't open*/
     FILE* f = fopen(path, "r");
 
     _Bool ret = f != NULL;
 
-    fclose(f);
 
+
+    if(!ret)
+    {
+        fprintf(stderr,"Failed to Open File \'%s\' : %s\n",path,strerror(errno));
+        return ret;
+    }
+
+    fclose(f);
     return ret;
 }
 
