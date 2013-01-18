@@ -101,11 +101,11 @@ int displayGPT(const char* path)
     fseek(f, 512, SEEK_CUR);
 
     /*READ GPT HEADER*/
-     tmp = readGPTHeader(f);
+    tmp = readGPTHeader(f);
 
-    if(strcmp(tmp.signature, "EFI PART"))
+    if(memcmp(tmp.signature, "EFI PART",8))
     {
-        fprintf(stderr, "Does not contain GPT at first data block");
+        fprintf(stderr, "Does not contain GPT at first data block\n");
         return EXIT_FAILURE;
     }
 
@@ -149,7 +149,7 @@ int splitBinFile(const char* path)
     /*Declarations*/
     FILE* f;
     APHeader tmp;
-    int i = 0, j = 0;
+    int i = 0, j = 0, *parts, cur = 0;
 
     f = fopen(path, "r");
 
@@ -157,36 +157,70 @@ int splitBinFile(const char* path)
     puts("Reading AP Header...\n");
     tmp = readAPHeader(f);
 
+    /*Generate Part Data for constructing files*/
+    parts = calloc(tmp.pent_num, sizeof(int));
+    for(; i < tmp.pent_num; i++)
+        parts[i] = 1;
+
+    /*Check for duplicate names in blocks*/
+    for(i = 1; i < tmp.pent_num; i++)
+    {
+        if(strcmp(tmp.pent_arr[i].name, tmp.pent_arr[i - 1].name) == 0)
+        {
+            char c;
+
+            printf("There are Data Blocks with duplicate names.\n"
+                    "Do you want to merge them? Y/N : ");
+
+            c = getchar();
+
+            if(c == 'y' || c == 'Y')
+            {
+                /*Update part data*/
+                j = i - 1;
+                parts[j]++;
+                i++;
+
+                for(; i < tmp.pent_num; i++)
+                    if(strcmp(tmp.pent_arr[i].name, tmp.pent_arr[i - 1].name) == 0) parts[j]++;
+                    else j++;
+
+                parts[j] = 0;
+            }
+
+            break;
+        }
+    }
+
     puts("Writing Files...");
 
     /*WRITE FILES*/
-    for(; i < tmp.pent_num; i++)
+    for(i = 0; i < tmp.pent_num; i++)
     {
         /*WRITE FILE TO CUR DIR*/
-
         /*Block Declarations*/
-        char* name;
+        char* name,buff[512];
         FILE* out;
-        char buff[512];
-        int len = 0;
+        int len = 0,start;
 
         name = calloc(512, sizeof(char));
 
         /*Add safe implementation Cross Platform change*/
 
         /*%d cannot ever exceed 512 char due to int limit*/
-        sprintf(name, "%d",tmp.pent_arr[i].pent_id);
+        sprintf(name, "%d", tmp.pent_arr[i].pent_id);
 
-        len = strlen(tmp.pent_arr[i].name) + 5 /* - + .img */ + 1 /* NULL Terminating*/ +strlen(name) ;
+        len = strlen(tmp.pent_arr[i].name) + 5 /* - + .img */+ 1 /* NULL Terminating*/
+        + strlen(name);
 
-        if(len>512)
+        if(len > 512)
         {
             /*Does not fit into buffer*/
 
             /* resize buffer */
             printf("Resizing File buffer to accommodate extreme file name!");
 
-            name = realloc(name,sizeof(char)*len);
+            name = realloc(name, sizeof(char) * len);
         }
 
         sprintf(name, "%d-%s.img", tmp.pent_arr[i].pent_id, tmp.pent_arr[i].name);
@@ -204,8 +238,31 @@ int splitBinFile(const char* path)
             fwrite(buff, sizeof(char), 512, out);
         }
 
+        start = tmp.pent_arr->disk_off;
+
+        parts[cur]--;
+
+        while((parts[cur]--)>0)
+        {
+            i++;
+
+            printf("\n\t\tAppending to File");
+
+
+            fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
+            fseek(out,(tmp.pent_arr[i].disk_off-start)*512,SEEK_SET);
+
+            for(j = 0; j < tmp.pent_arr[i].file_size; j++)
+            {
+                /*DO 512 BLOCK*/
+                fread(buff, sizeof(char), 512, f);
+                fwrite(buff, sizeof(char), 512, out);
+            }
+        }
+
         fclose(out);
         free(name);
+        cur++;
 
         puts(" -- DONE --");
     }

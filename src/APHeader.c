@@ -132,6 +132,13 @@ APHeader readAPHeader44DD55AA(FILE *f)
     {
         return readAPHeader44DD55AA_948B8349(f);
     }
+    else if(tmp[0] != 0xffffffff)
+    {
+        fprintf(stderr, "Unknown Magic Number at 0x8 : ");
+        printHexUINT32(stderr, tmp[0]);
+        fprintf(stderr, "\n");
+        return out;
+    }
 
     /*CHECK 2*/
     fseek(f, 0x600, SEEK_SET);
@@ -142,7 +149,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     }
     else
     {
-        fprintf(stderr, "Failed on secondary magic check : ");
+        fprintf(stderr, "Unknown Magic Number at 0x600 : ");
         printHexUINT32(stderr, tmp[0]);
         fprintf(stderr, "\n");
         return out;
@@ -168,7 +175,7 @@ APHeader readAPHeader44DD55AA_2BF67889(FILE *f)
     }
     else
     {
-        fprintf(stderr, "Failed on tertiary magic check : ");
+        fprintf(stderr, "Unknown Magic Number at 0x2000 : ");
         printHexUINT32(stderr, tmp[0]);
         fprintf(stderr, "\n");
         return out;
@@ -194,7 +201,7 @@ APHeader readAPHeader44DD55AA_AABB00CC(FILE *f)
     }
     else
     {
-        fprintf(stderr, "Failed on tertiary magic check : ");
+        fprintf(stderr, "Unkown Magic Number at 0x2000 : ");
         printHexUINT32(stderr, tmp[0]);
         fprintf(stderr, "\n");
         return out;

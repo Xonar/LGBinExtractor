@@ -26,14 +26,17 @@ This tool is pretty picky when it comes to magic checking. I'll add support for 
 
 CONFIRMED WORKING FOR :
 -----------------------
-P970
-KU5900
-AS730
+BIN:
+	P970
+	KU5900
+	AS730
+TOT:
+	Optimus G (Sprint,AT&T)
+	Nexus 4
 
 TESTING/PLANNED NEAR FUTURE
 ---------------------------
-Optimus G
-P990 (*.tot file)
+P990
 
 CONTACT INFO
 ------------
