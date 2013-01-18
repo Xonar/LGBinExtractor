@@ -172,7 +172,9 @@ int splitBinFile(const char* path)
             printf("There are Data Blocks with duplicate names.\n"
                     "Do you want to merge them? Y/N : ");
 
+
             c = getchar();
+            /* TODO to allow further input - discard trailing chars*/
 
             if(c == 'y' || c == 'Y')
             {
@@ -238,7 +240,7 @@ int splitBinFile(const char* path)
             fwrite(buff, sizeof(char), 512, out);
         }
 
-        start = tmp.pent_arr->disk_off;
+        start = tmp.pent_arr[i].disk_off;
 
         parts[cur]--;
 
