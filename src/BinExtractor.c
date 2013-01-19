@@ -79,7 +79,7 @@ void skipToNextLBA(FILE* f)
     uint16_t tmp = ftell(f);
     if(tmp == -1)
     /*Something Went Wrong*/
-    fprintf(stderr, "ERROR");
+    fprintf(stderr, "ERROR\n");
     else if(tmp % 512 > 0) fseek(f, 512 - tmp % 512, SEEK_CUR);
 }
 
