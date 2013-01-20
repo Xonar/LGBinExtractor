@@ -10,10 +10,9 @@
 APHeader readAPHeader(FILE *f)
 {
     APHeader out;
+    uint32_t* magic = (uint32_t*) &out.magic;
 
     INIT_APHEADER(out, 0, 0, 0, 0)
-
-    uint32_t* magic = (uint32_t*) &out.magic;
 
     /*READ MAGIC NUMBER*/
     fread(&out, sizeof(char) * 4, 1, f);
@@ -29,7 +28,7 @@ APHeader readAPHeader(FILE *f)
             break;
         default:
             fprintf(stderr, "Unsupported Bin Type : ");
-            printHexUINT32(stderr, *magic);
+            printHex(stderr, magic,sizeof(*magic));
             fprintf(stderr, "\n");
             break;
     }
@@ -40,10 +39,9 @@ APHeader readAPHeader(FILE *f)
 APHeader readAPHeaderA5A555AA(FILE *f)
 {
     APHeader out;
+    int i = 0;
 
     INIT_APHEADER(out, 0xA5, 0xA5, 0x55, 0xAA)
-
-    int i = 0;
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     while(1)
@@ -110,11 +108,10 @@ APHeader readAPHeader44DD55AA_AF33BFDE(FILE *f)
 APHeader readAPHeader44DD55AA(FILE *f)
 {
     APHeader out;
-
-    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
-
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
 
     /*CHECK MAGIC NUMBERS*/
 
@@ -140,7 +137,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     else if(tmp[0] != 0xffffffff)
     {
         fprintf(stderr, "Unknown Magic Number at 0x8 : ");
-        printHexUINT32(stderr, tmp[0]);
+        printHex(stderr, tmp,sizeof(*tmp));
         fprintf(stderr, "\n");
         return out;
     }
@@ -155,7 +152,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     else if(tmp[0] != 0xffffffff)
     {
         fprintf(stderr, "Unknown Magic Number at 0x600 : ");
-        printHexUINT32(stderr, tmp[0]);
+        printHex(stderr, tmp,sizeof(*tmp));
         fprintf(stderr, "\n");
         return out;
     }
@@ -169,11 +166,10 @@ APHeader readAPHeader44DD55AA(FILE *f)
 APHeader readAPHeader44DD55AA_2BF67889(FILE *f)
 {
     APHeader out;
-
-    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
-
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
 
     /*CHECK MAGIC NUMBERS*/
 
@@ -186,7 +182,7 @@ APHeader readAPHeader44DD55AA_2BF67889(FILE *f)
     else if(tmp[0] != 0xffffffff)
     {
         fprintf(stderr, "Unknown Magic Number at 0x2000 : ");
-        printHexUINT32(stderr, tmp[0]);
+        printHex(stderr, tmp,sizeof(*tmp));
         fprintf(stderr, "\n");
         return out;
     }
@@ -219,7 +215,7 @@ APHeader readAPHeader44DD55AA_AABB00CC(FILE *f)
     else if(tmp[0] != 0xffffffff)
     {
         fprintf(stderr, "Unknown Magic Number at 0x2000 : ");
-        printHexUINT32(stderr, tmp[0]);
+        printHex(stderr, tmp,sizeof(*tmp));
         fprintf(stderr, "\n");
         return out;
     }
@@ -233,12 +229,11 @@ APHeader readAPHeader44DD55AA_AABB00CC(FILE *f)
 APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f)
 {
     APHeader out;
-
-    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
-
     int i = 0;
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     fseek(f, 0x2004, SEEK_SET);
@@ -284,12 +279,11 @@ APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f)
     /*TODO Read Device Name @ 0x4000*/
 
     APHeader out;
-
-    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
-
     int i = 0;
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     fseek(f, 0x2004, SEEK_SET);
@@ -337,7 +331,7 @@ APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f)
 void printAPHeader(const APHeader h, FILE *f)
 {
     fprintf(f, "AP HEADER\n----------\n%-30s", "Magic Number");
-    printHexString_u(f, h.magic, 4);
+    printHex(f, h.magic, 4);
     fprintf(f, "\n%-30s%d\n", "Number of Partitions", h.pent_num);
 }
 

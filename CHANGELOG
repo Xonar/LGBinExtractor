@@ -1,6 +1,9 @@
 CHANGELOG
 
-20/01/2013
+20/01/2013 #2
+	Improve HEX Output
+
+20/01/2013 #1
 	Fix: Not reading file in binary in some OS
 	Fix: Initialized some values to NULL/0
 	Improve Code Formatting

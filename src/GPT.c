@@ -58,13 +58,13 @@ void printGPTHeader(const GPTHeader h, FILE* f)
 {
     fprintf(f, "GPT HEADER\n----------\n%-30s", "Signature");
 
-    printHexString_s(f, h.signature, 8);
+    printHex(f, h.signature, 8);
 
     fprintf(f, "\n%-30s%" PRIu32 "\n"
     "%-30s%" PRIu32 "\n"
     "%-30s", "Revision", h.revision, "Header Size", h.hsize, "CRC32 of Header");
 
-    printHexUINT32(f, h.crc);
+    printHex(f, &h.crc,sizeof(uint32_t));
 
     fprintf(f, "\n%-30s%" PRIu64 "\n"
     "%-30s%" PRIu64 "\n"
@@ -73,7 +73,7 @@ void printGPTHeader(const GPTHeader h, FILE* f)
     "%-30s", "Current Header LBA", h.current_lba, "Backup Header LBA", h.backup_lba,
             "First Usable LBA", h.first_lba, "Last Usable LBA", h.last_lba, "Disk GUID");
 
-    printHexString_u(f, h.disk_guid, 16);
+    printHex(f, h.disk_guid, 16);
 
     fprintf(f, "\n%-30s%" PRIu64 "\n"
     "%-30s%" PRIu32 "\n"
@@ -81,7 +81,7 @@ void printGPTHeader(const GPTHeader h, FILE* f)
     "%-30s", "Start of Partition Entries", h.pent_lba, "Number of Partition Entries", h.pent_num,
             "Size of Partition Entries", h.pent_size, "CRC32 of Partition Array");
 
-    printHexUINT32(f, h.crc_part);
+    printHex(f, &h.crc_part,sizeof(uint32_t));
 
     fputc('\n', f);
 }
@@ -90,11 +90,11 @@ void printGPTPartitionEntry(const GPTPartitionEntry pe, FILE* f)
 {
     fprintf(f, "PARTITION ENTRY\n---------------\n    %-26s", "Partition Type GUID");
 
-    printHexString_u(f, pe.ptype_guid, 16);
+    printHex(f, pe.ptype_guid, 16);
 
     fprintf(f, "\n    %-26s", "Unique Partition GUID");
 
-    printHexString_u(f, pe.upart_guid, 16);
+    printHex(f, pe.upart_guid, 16);
 
     fprintf(f, "\n    %-26s%" PRIu64 "\n"
     "    %-26s%" PRIu64 "\n"

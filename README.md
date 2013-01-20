@@ -28,6 +28,7 @@ This tool is pretty picky when it comes to magic checking. I'll add support for 
  - P970
  - KU5900
  - AS730
+
 #####TOT:
 - Optimus G (Sprint,AT&T)
 - Nexus 4

@@ -300,44 +300,11 @@ _Bool canOpenFile(const char* path)
 }
 
 /*PRINT HEX STRING FROM DATA*/
-void printHexString_u(FILE* f, const unsigned char* string, const unsigned int len)
+void printHex(FILE* f,const void* data,const unsigned int len)
 {
     int i = 1;
-    fprintf(f, "%02X", (unsigned char) string[0]);
+    fprintf(f, "%02X", ((unsigned char*)data)[0]);
 
     for(; i < len; i++)
-        fprintf(f, " %02X", (unsigned char) string[i]);
-}
-
-void printHexString_s(FILE* f, const char* string, const unsigned int len)
-{
-    int i = 1;
-    fprintf(f, "%02X", (signed char) string[0]);
-
-    for(; i < len; i++)
-        fprintf(f, " %02X", (signed char) string[i]);
-}
-
-void printHexUINT64(FILE* f, uint64_t num)
-{
-    int i = 1;
-    fprintf(f, "%02X", (unsigned int) (num % 256));
-
-    for(; i < 8; i++)
-    {
-        num /= 256;
-        fprintf(f, " %02X", (unsigned int) (num % 256));
-    }
-}
-
-void printHexUINT32(FILE* f, uint32_t num)
-{
-    int i = 1;
-    fprintf(f, "%02X", num % 256);
-
-    for(; i < 4; i++)
-    {
-        num /= 256;
-        fprintf(f, " %02X", num % 256);
-    }
+        fprintf(f, " %02X", ((unsigned char*)data)[i]);
 }
