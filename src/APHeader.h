@@ -25,33 +25,73 @@ typedef struct _APPartitionEntry
 } APPartitionEntry;
 
 /*AP HEADER STRUCT*/
+
+/*MAGIC NUMBER*/
+typedef struct _MagicNumber
+{
+    uint32_t magic;
+    unsigned int off;
+    struct _MagicNumber* next;
+} MagicNumber;
+
+#define INIT_MAGICNUMBER(mn)                \
+        mn.magic = 0;                       \
+        mn.off = 0;                         \
+        mn.next = NULL;
+
 typedef struct _APHeader
 {
-    unsigned char magic[4];
+    MagicNumber magic;
     int pent_num;
     APPartitionEntry* pent_arr;
 } APHeader;
 
-#define INIT_APHEADER(aph,m1,m2,m3,m4)  \
-   out.pent_num = 0;                    \
-   out.pent_arr = NULL;                 \
-                                        \
-   out.magic[0] = m1;                   \
-   out.magic[1] = m2;                   \
-   out.magic[2] = m3;                   \
-   out.magic[3] = m4;                   \
-                                        \
+#define INIT_APHEADER(aph)                  \
+   aph.pent_num = 0;                        \
+   aph.pent_arr = NULL;                     \
+   aph.magic.magic = 0;                     \
+   aph.magic.off = 0;                       \
+   aph.magic.next = NULL;
 
+typedef enum _DataType
+{
+    DISK_SIZE, DISK_OFF, FILE_SIZE, FILE_OFF, BLOCK_ID, BLOCK_NAME, SKIP
+} DataType;
+
+typedef struct _Item
+{
+    DataType type;
+    size_t size;
+} Item;
+
+/*DATA BLOCK*/
+typedef struct _DataBlock
+{
+    size_t blockOff;
+    size_t blockSize;
+    uint8_t numItems;
+    Item* items;
+    struct _DataBlock* next;
+} DataBlock;
+
+#define INIT_DATABLOCK(db)                  \
+        db.blockOff = 0;                    \
+        db.blockSize = 0                    \
+        db.numBlocks = 0;                   \
+        db.numItems = 0;                    \
+        db.items = NULL;                    \
+        db.next = NULL;
 
 /*READ*/
 APHeader readAPHeader(FILE *f);
 
 APHeader readAPHeader44DD55AA(FILE *f);
 APHeader readAPHeader44DD55AA_2BF67889(FILE *f);
-APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f);
+APHeader readAPHeader44DD55AA_2BF67889_33EC55AA(FILE *f);
+APHeader readAPHeader44DD55AA_33EC55AA(FILE *f);
 APHeader readAPHeader44DD55AA_AF33BFDE(FILE *f);
 APHeader readAPHeader44DD55AA_AABB00CC(FILE *f);
-APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f);
+APHeader readAPHeader44DD55AA_AABB00CC_33EC55AA(FILE *f);
 APHeader readAPHeader44DD55AA_EAC86250(FILE *f);
 APHeader readAPHeaderA5A555AA(FILE *f);
 

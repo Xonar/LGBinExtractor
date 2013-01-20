@@ -6,7 +6,6 @@ A tool for extracting bin firmware for LG Phones
 http://forum.xda-developers.com/showthread.php?t=1879915
 
 ##READ THIS BEFORE ANYTHING ELSE
-
 If there isn't support for your phone just ask. I'll be glad to include it. As I don't own many of these phones (Just the P970 is mine) and my bandwidth is limited I need some info from you if I am to add support.
 
 ######EMail or msg me on XDA with the following info:
@@ -28,6 +27,7 @@ This tool is pretty picky when it comes to magic checking. I'll add support for 
  - P970
  - KU5900
  - AS730
+ - P940
 
 #####TOT:
 - Optimus G (Sprint,AT&T)

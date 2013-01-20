@@ -28,46 +28,53 @@ int main(int argc, char* args[])
         }
     }
 
-    /*IF INVALID
-     NOTE: ITS SET OUT LIKE THIS AND NOT argc != 2 E SO THATS ITS EASY TO CHANGE*/
-    if(argc < 2 || argc > 2)
+    if(argc == 2)
     {
-        printUsage();
-        return EXIT_FAILURE;
-    }
-
-    if(strcmp("-daph", args[0]) == 0)
-    {
-        if(canOpenFile(args[1]))
+        if(strcmp("-ebh", args[0]) == 0)
         {
-            displayAP(args[1]);
+            if(canOpenFile(args[1]))
+            {
+                extractBinHeaderFile(args[1]);
+            }
+            else
+            {
+                return EXIT_FAILURE;
+            }
         }
-        else
+        else if(strcmp("-daph", args[0]) == 0)
         {
-            return EXIT_FAILURE;
+            if(canOpenFile(args[1]))
+            {
+                displayAP(args[1]);
+            }
+            else
+            {
+                return EXIT_FAILURE;
+            }
         }
-    }
-    else if(strcmp("-dgpt", args[0]) == 0)
-    {
-        if(canOpenFile(args[1]))
+        else if(strcmp("-dgpt", args[0]) == 0)
         {
-            displayGPT(args[1]);
+            if(canOpenFile(args[1]))
+            {
+                displayGPT(args[1]);
+            }
+            else
+            {
+                return EXIT_FAILURE;
+            }
         }
-        else
+        else if(strcmp("-extract", args[0]) == 0)
         {
-            return EXIT_FAILURE;
+            if(canOpenFile(args[1]))
+            {
+                splitBinFile(args[1]);
+            }
+            else
+            {
+                return EXIT_FAILURE;
+            }
         }
-    }
-    else if(strcmp("-extract", args[0]) == 0)
-    {
-        if(canOpenFile(args[1]))
-        {
-            splitBinFile(args[1]);
-        }
-        else
-        {
-            return EXIT_FAILURE;
-        }
+        else printUsage();
     }
     else printUsage();
 
@@ -274,13 +281,36 @@ int splitBinFile(const char* path)
     return EXIT_SUCCESS;
 }
 
+int extractBinHeaderFile(const char* path)
+{
+    char buf[512];
+
+    int i = 0;
+    FILE* f = fopen(path, "rb");
+    FILE* out;
+
+    out = fopen("header.bin", "wb");
+
+    for(; i < 0x800; i++)
+    {
+        /*DO 512 BLOCK*/
+        fread(buf, sizeof(char), 512, f);
+        fwrite(buf, sizeof(char), 512, out);
+    }
+
+    fclose(f);
+
+    return EXIT_SUCCESS;
+}
+
 void printUsage()
 {
     /*PRINT USAGE*/
     printf(
-            "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n",
+            "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n",
             "-daph file", "Display Header Information", "-dgpt file",
-            "Display GPT Header Information", "-extract file", "Split Bin into Partitions");
+            "Display GPT Header Information", "-extract file", "Split Bin into Partitions",
+            "-ebh file", "Extract Bin Header from file");
 }
 
 _Bool canOpenFile(const char* path)
@@ -300,11 +330,11 @@ _Bool canOpenFile(const char* path)
 }
 
 /*PRINT HEX STRING FROM DATA*/
-void printHex(FILE* f,const void* data,const unsigned int len)
+void printHex(FILE* f, const void* data, const unsigned int len)
 {
     int i = 1;
-    fprintf(f, "%02X", ((unsigned char*)data)[0]);
+    fprintf(f, "%02X", ((unsigned char*) data)[0]);
 
     for(; i < len; i++)
-        fprintf(f, " %02X", ((unsigned char*)data)[i]);
+        fprintf(f, " %02X", ((unsigned char*) data)[i]);
 }

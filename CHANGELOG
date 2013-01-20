@@ -1,5 +1,12 @@
 CHANGELOG
 
+20/01/2013 #3
+	Revamp reading 44 DD 55 AA APHeader
+	Add Ability to extract header
+
+20/01/2013 #2
+	Add support for P940
+
 20/01/2013 #2
 	Improve HEX Output
 
