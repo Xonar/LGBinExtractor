@@ -9,9 +9,10 @@
 
 APHeader readAPHeader(FILE *f)
 {
-    APHeader out =
-    {
-    { 0, 0, 0, 0 }, 0, 0 };
+    APHeader out;
+
+    INIT_APHEADER(out, 0, 0, 0, 0)
+
     uint32_t* magic = (uint32_t*) &out.magic;
 
     /*READ MAGIC NUMBER*/
@@ -39,12 +40,10 @@ APHeader readAPHeader(FILE *f)
 APHeader readAPHeaderA5A555AA(FILE *f)
 {
     APHeader out;
-    int i = 0;
 
-    out.magic[0] = 0xA5;
-    out.magic[1] = 0xA5;
-    out.magic[2] = 0x55;
-    out.magic[3] = 0xAA;
+    INIT_APHEADER(out, 0xA5, 0xA5, 0x55, 0xAA)
+
+    int i = 0;
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     while(1)
@@ -102,16 +101,20 @@ APHeader readAPHeader44DD55AA_948B8349(FILE *f)
     return readAPHeader44DD55AA_2BF67889(f);
 }
 
+APHeader readAPHeader44DD55AA_AF33BFDE(FILE *f)
+{
+    /*A GUESS ;)*/
+    return readAPHeader44DD55AA_2BF67889(f);
+}
+
 APHeader readAPHeader44DD55AA(FILE *f)
 {
     APHeader out;
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
+
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
-
-    out.magic[0] = 0x44;
-    out.magic[1] = 0xDD;
-    out.magic[2] = 0x55;
-    out.magic[3] = 0xAA;
 
     /*CHECK MAGIC NUMBERS*/
 
@@ -129,6 +132,10 @@ APHeader readAPHeader44DD55AA(FILE *f)
     else if(tmp[0] == 0x49838b94)
     {
         return readAPHeader44DD55AA_948B8349(f);
+    }
+    else if(tmp[0] == 0xdebf33af)
+    {
+        return readAPHeader44DD55AA_AF33BFDE(f);
     }
     else if(tmp[0] != 0xffffffff)
     {
@@ -162,13 +169,11 @@ APHeader readAPHeader44DD55AA(FILE *f)
 APHeader readAPHeader44DD55AA_2BF67889(FILE *f)
 {
     APHeader out;
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
+
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
-
-    out.magic[0] = 0x44;
-    out.magic[1] = 0xDD;
-    out.magic[2] = 0x55;
-    out.magic[3] = 0xAA;
 
     /*CHECK MAGIC NUMBERS*/
 
@@ -228,14 +233,12 @@ APHeader readAPHeader44DD55AA_AABB00CC(FILE *f)
 APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f)
 {
     APHeader out;
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
+
     int i = 0;
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
-
-    out.magic[0] = 0x44;
-    out.magic[1] = 0xDD;
-    out.magic[2] = 0x55;
-    out.magic[3] = 0xAA;
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     fseek(f, 0x2004, SEEK_SET);
@@ -281,14 +284,12 @@ APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f)
     /*TODO Read Device Name @ 0x4000*/
 
     APHeader out;
+
+    INIT_APHEADER(out, 0x44, 0xDD, 0x55, 0xAA)
+
     int i = 0;
     uint32_t tmp[4] =
     { 0, 0, 0, 0 };
-
-    out.magic[0] = 0x44;
-    out.magic[1] = 0xDD;
-    out.magic[2] = 0x55;
-    out.magic[3] = 0xAA;
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
     fseek(f, 0x2004, SEEK_SET);

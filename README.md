@@ -16,8 +16,8 @@ If there isn't support for your phone just ask. I'll be glad to include it. As I
  - It is rare that I can actually download the very large firmware files so this is important</br>
  - Any hosting site will be sufficient. You can also post in the thread and attach the file there.
 - Your phone partition info
-	    -the output from 'cat /proc/mounts' is usually sufficient
-- All known partition starting points.
+	    -the output from 'cat /proc/partitions' is usually sufficient
+- All known partition starting points within the file.
 
 You should also be prepared for some correspondence so I can use you to test if it actually works. I am doing it for you after all.
 		
@@ -29,11 +29,12 @@ This tool is pretty picky when it comes to magic checking. I'll add support for 
  - KU5900
  - AS730
 #####TOT:
-- Optimus G (Sprint,AT&T
+- Optimus G (Sprint,AT&T)
 - Nexus 4
 
 ##TESTING/PLANNED NEAR FUTURE
 - P990
+- Optimus G (Bell)
 
 ##CONTACT INFO
 E-Mail : xonar.leroux@gmail.com<br />

@@ -90,7 +90,7 @@ int displayGPT(const char* path)
     GPTHeader tmp;
     GPTPartitionEntry* pes;
 
-    f = fopen(path, "r");
+    f = fopen(path, "rb");
 
     /*SKIP AP INFO BLOCK*/
     fseek(f, 0x100000, SEEK_SET);
@@ -101,7 +101,7 @@ int displayGPT(const char* path)
     /*READ GPT HEADER*/
     tmp = readGPTHeader(f);
 
-    if(memcmp(tmp.signature, "EFI PART",8))
+    if(memcmp(tmp.signature, "EFI PART", 8))
     {
         fprintf(stderr, "Does not contain GPT at first data block\n");
         return EXIT_FAILURE;
@@ -122,7 +122,7 @@ int displayGPT(const char* path)
 
 int displayAP(const char* path)
 {
-    FILE* f = fopen(path, "r");
+    FILE* f = fopen(path, "rb");
 
     /*READ AP HEADER*/
     APHeader tmp = readAPHeader(f);
@@ -149,7 +149,7 @@ int splitBinFile(const char* path)
     APHeader tmp;
     int i = 0, j = 0, *parts, cur = 0;
 
-    f = fopen(path, "r");
+    f = fopen(path, "rb");
 
     /*READ AP HEADER*/
     puts("Reading AP Header...");
@@ -170,9 +170,9 @@ int splitBinFile(const char* path)
             printf("\nThere are Data Blocks with duplicate names.\n"
                     "Do you want to merge them? Y/N : ");
 
-
             c = getchar();
-            while(getchar()!='\n');
+            while(getchar() != '\n')
+                ;
 
             if(c == 'y' || c == 'Y')
             {
@@ -198,9 +198,9 @@ int splitBinFile(const char* path)
     for(i = 0; i < tmp.pent_num; i++)
     {
         /*WRITE FILE TO CUR DIR*/
-        char* name,buff[512];
+        char* name, buff[512];
         FILE* out;
-        int len = 0,start;
+        int len = 0, start;
 
         name = calloc(512, sizeof(char));
 
@@ -224,7 +224,7 @@ int splitBinFile(const char* path)
 
         sprintf(name, "%d-%s.img", tmp.pent_arr[i].pent_id, tmp.pent_arr[i].name);
 
-        out = fopen(name, "w");
+        out = fopen(name, "wb");
         fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
 
         printf("\tWriting File : %-20s", name);
@@ -241,15 +241,14 @@ int splitBinFile(const char* path)
 
         parts[cur]--;
 
-        while((parts[cur]--)>0)
+        while((parts[cur]--) > 0)
         {
             i++;
 
             printf("\n\t\tAppending to File");
 
-
             fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
-            fseek(out,(tmp.pent_arr[i].disk_off-start)*512,SEEK_SET);
+            fseek(out, (tmp.pent_arr[i].disk_off - start) * 512, SEEK_SET);
 
             for(j = 0; j < tmp.pent_arr[i].file_size; j++)
             {
@@ -286,15 +285,13 @@ void printUsage()
 
 _Bool canOpenFile(const char* path)
 {
-    FILE* f = fopen(path, "r");
+    FILE* f = fopen(path, "rb");
 
     _Bool ret = f != NULL;
 
-
-
     if(!ret)
     {
-        fprintf(stderr,"Failed to Open File \'%s\' : %s\n",path,strerror(errno));
+        fprintf(stderr, "Failed to Open File \'%s\' : %s\n", path, strerror(errno));
         return ret;
     }
 

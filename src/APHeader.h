@@ -32,16 +32,28 @@ typedef struct _APHeader
     APPartitionEntry* pent_arr;
 } APHeader;
 
+#define INIT_APHEADER(aph,m1,m2,m3,m4)  \
+   out.pent_num = 0;                    \
+   out.pent_arr = NULL;                 \
+                                        \
+   out.magic[0] = m1;                   \
+   out.magic[1] = m2;                   \
+   out.magic[2] = m3;                   \
+   out.magic[3] = m4;                   \
+                                        \
+
+
 /*READ*/
 APHeader readAPHeader(FILE *f);
 
-APHeader readAPHeaderA5A555AA(FILE *f);
 APHeader readAPHeader44DD55AA(FILE *f);
 APHeader readAPHeader44DD55AA_2BF67889(FILE *f);
 APHeader readAPHeader44DD55AA_2BF67889_AA55EC33(FILE *f);
+APHeader readAPHeader44DD55AA_AF33BFDE(FILE *f);
 APHeader readAPHeader44DD55AA_AABB00CC(FILE *f);
 APHeader readAPHeader44DD55AA_AABB00CC_AA55EC33(FILE *f);
 APHeader readAPHeader44DD55AA_EAC86250(FILE *f);
+APHeader readAPHeaderA5A555AA(FILE *f);
 
 /*DISPLAY*/
 void printAPHeader(const APHeader h, FILE *f);

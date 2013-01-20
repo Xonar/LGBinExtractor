@@ -20,13 +20,12 @@ GPTPartitionEntry readGPTPartitionEntry(FILE* f)
 {
     /*Declarations*/
     GPTPartitionEntry out;
-    int i = 1,j=2;
+    int i = 1, j = 2;
 
     fread(&out, sizeof(GPTPartitionEntry), 1, f);
 
     /*Do poor mans convention from UTF16 to UTF8
-      Ignoring all non ASCII characters*/
-
+     Ignoring all non ASCII characters*/
 
     for(; i < 32; i++, j += 2)
         out.part_name[i] = out.part_name[j];
@@ -41,7 +40,7 @@ void readGPTPartitionEntryArray(FILE* f, GPTPartitionEntry* out, int num)
     fread(out, sizeof(GPTPartitionEntry), num, f);
 
     /*Do poor mans convention from UTF16 to UTF8
-      Ignoring all non ASCII characters*/
+     Ignoring all non ASCII characters*/
 
     num--;
     for(; num >= 0; num--)
@@ -107,7 +106,10 @@ void printGPTPartitionEntry(const GPTPartitionEntry pe, FILE* f)
 void printFullGPTInfo(const GPTHeader h, const GPTPartitionEntry* pe, FILE* f)
 {
     int i = 0;
-    GPTPartitionEntry PE_NULL = {{0},{0},0,0,0,""};
+    GPTPartitionEntry PE_NULL =
+    {
+    { 0 },
+    { 0 }, 0, 0, 0, "" };
 
     printGPTHeader(h, f);
 

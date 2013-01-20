@@ -1,5 +1,13 @@
 CHANGELOG
 
+20/01/2013
+	Fix: Not reading file in binary in some OS
+	Fix: Initialized some values to NULL/0
+	Improve Code Formatting
+
+19/01/2013
+	Fix Markup on Readme
+
 18/01/2013 #3
 	Fix: Segfault when opening file that can't be opened
 	Improved Comments and Console Output
