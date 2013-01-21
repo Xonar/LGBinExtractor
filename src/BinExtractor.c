@@ -151,24 +151,43 @@ int splitBinFile(const char* path)
 {
     /*Declarations*/
     FILE* f;
-    APHeader tmp;
+    APHeader aph;
+    GPTHeader gpt;
+    GPTPartitionEntry* pes;
     int i = 0, j = 0, *parts, cur = 0;
+    _Bool addWhitespace = 0;
 
     f = fopen(path, "rb");
 
     /*READ AP HEADER*/
     puts("Reading AP Header...");
-    tmp = readAPHeader(f);
+    aph = readAPHeader(f);
+
+    /*READ GPT HEADER*/
+    puts("Reading GPT Header...");
+    fseek(f, 0x100200, SEEK_SET);
+    gpt = readGPTHeader(f);
+
+    if(memcmp(gpt.signature, "EFI PART", 8))
+    {
+        fprintf(stdout, "\tDoes not contain GPT at first data block\n");
+        pes = NULL;
+    }
+    else
+    {
+        pes = (GPTPartitionEntry*) calloc(gpt.pent_num, sizeof(GPTPartitionEntry));
+        readGPTPartitionEntryArray(f, pes, gpt.pent_num);
+    }
 
     /*GENERATE PART DATA*/
-    parts = calloc(tmp.pent_num, sizeof(int));
-    for(; i < tmp.pent_num; i++)
+    parts = calloc(aph.pent_num, sizeof(int));
+    for(; i < aph.pent_num; i++)
         parts[i] = 1;
 
     /*CHECK FOR DUPLICATE NAMES OF PARTITION ENTRIES*/
-    for(i = 1; i < tmp.pent_num; i++)
+    for(i = 1; i < aph.pent_num; i++)
     {
-        if(strcmp(tmp.pent_arr[i].name, tmp.pent_arr[i - 1].name) == 0)
+        if(strcmp(aph.pent_arr[i].name, aph.pent_arr[i - 1].name) == 0)
         {
             char c;
 
@@ -186,11 +205,32 @@ int splitBinFile(const char* path)
                 parts[j]++;
                 i++;
 
-                for(; i < tmp.pent_num; i++)
-                    if(strcmp(tmp.pent_arr[i].name, tmp.pent_arr[i - 1].name) == 0) parts[j]++;
+                for(; i < aph.pent_num; i++)
+                    if(strcmp(aph.pent_arr[i].name, aph.pent_arr[i - 1].name) == 0) parts[j]++;
                     else j++;
 
                 parts[j] = 0;
+            }
+
+            /*ADD TRAILING WHITESPACE*/
+            if(pes != NULL )
+            {
+                printf("\nSome Merged partitions requires the file to be\n"
+                        "the full size and won't mount if it's not.\n"
+                        "Do you want to add trailing whitespace? Y/N : ");
+
+                c = getchar();
+                while(getchar() != '\n')
+                    ;
+
+                if(c == 'y' || c == 'Y') addWhitespace = 1;
+            }
+            else
+            {
+                printf("\nSome Merged partitions requires the file to be\n"
+                        "the full size and won't mount if it's not.\n"
+                        "The Bin file does not contain a GPT Header and\n"
+                        "The whitespace can't be added automatically\n");
             }
 
             break;
@@ -200,21 +240,22 @@ int splitBinFile(const char* path)
     puts("\nWriting Files...");
 
     /*WRITE FILES*/
-    for(i = 0; i < tmp.pent_num; i++)
+    for(i = 0; i < aph.pent_num; i++)
     {
         /*WRITE FILE TO CUR DIR*/
         char* name, buff[512];
         FILE* out;
         int len = 0;
+        _Bool merged = 0;
 
         name = calloc(512, sizeof(char));
 
         /*Add safe implementation Cross Platform change*/
 
         /*%d cannot ever exceed 512 char due to int limit*/
-        sprintf(name, "%d", tmp.pent_arr[i].pent_id);
+        sprintf(name, "%d", aph.pent_arr[i].pent_id);
 
-        len = strlen(tmp.pent_arr[i].name) + 5 /* - + .img */+ 1 /* NULL Terminating*/
+        len = strlen(aph.pent_arr[i].name) + 5 /* - + .img */+ 1 /* NULL Terminating*/
         + strlen(name);
 
         if(len > 512)
@@ -227,15 +268,15 @@ int splitBinFile(const char* path)
 
         /*END - Add safe implementation Cross Platform change*/
 
-        sprintf(name, "%d-%s.img", tmp.pent_arr[i].pent_id, tmp.pent_arr[i].name);
+        sprintf(name, "%d-%s.img", aph.pent_arr[i].pent_id, aph.pent_arr[i].name);
 
         out = fopen(name, "wb");
-        fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
+        fseek(f, aph.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
 
         printf("\tWriting File : %-20s", name);
         fflush(stdout);
 
-        for(j = 0; j < tmp.pent_arr[i].file_size; j++)
+        for(j = 0; j < aph.pent_arr[i].file_size; j++)
         {
             /*DO 512 BLOCK*/
             fread(buff, sizeof(char), 512, f);
@@ -247,25 +288,55 @@ int splitBinFile(const char* path)
         while((parts[cur]--) > 0)
         {
             i++;
+            merged = 1;
 
             printf("\n\t\tAppending to File");
 
-            fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
+            fseek(f, aph.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
 
             /*ADD ACTUAL WHITESPACE AND NOT META DATA*/
-            for(j = 0;j<512;j++)
-                buff[j]='\0';
+            for(j = 0; j < 512; j++)
+                buff[j] = '\0';
 
-            for(j = 0;j < tmp.pent_arr[i].disk_off - tmp.pent_arr[i-1].disk_off - tmp.pent_arr[i-1].file_size ;j++)
+            for(j = 0;
+                    j
+                            < aph.pent_arr[i].disk_off - aph.pent_arr[i - 1].disk_off
+                                    - aph.pent_arr[i - 1].file_size; j++)
             {
-                fwrite(buff,sizeof(char),512,out);
+                fwrite(buff, sizeof(char), 512, out);
             }
             /*EOF - ADD ACTUAL WHITESPACE AND NOT META DATA*/
 
-            for(j = 0; j < tmp.pent_arr[i].file_size; j++)
+            for(j = 0; j < aph.pent_arr[i].file_size; j++)
             {
                 /*DO 512 BLOCK*/
                 fread(buff, sizeof(char), 512, f);
+                fwrite(buff, sizeof(char), 512, out);
+            }
+        }
+
+        /*ADD WHITESPACE*/
+        if(merged && addWhitespace)
+        {
+            int curGPTE = -1;
+            int curLBA = aph.pent_arr[i].disk_off + aph.pent_arr[i].file_off;
+
+            /*FIND CORROSPONDING GPT ENTRY*/
+            for(j = 0; j < gpt.pent_num; j++)
+            {
+                if(pes[j].first_lba < curLBA && pes[j].last_lba >= curLBA)
+                {
+                    curGPTE = j;
+                    break;
+                }
+            }
+
+            /*WRITE WHITESPACE*/
+            for(j = 0; j < 512; j++)
+                buff[j] = '\0';
+
+            for(j = 0; j < pes[curGPTE].last_lba - curLBA; j++)
+            {
                 fwrite(buff, sizeof(char), 512, out);
             }
         }
@@ -274,13 +345,16 @@ int splitBinFile(const char* path)
         free(name);
         cur++;
 
+        if(merged)
+            printf("          ");
+
         puts(" -- DONE --");
     }
 
     /*DONE*/
     puts("\nFinished");
 
-    free(tmp.pent_arr);
+    free(aph.pent_arr);
     fclose(f);
 
     return EXIT_SUCCESS;

@@ -1,6 +1,10 @@
 CHANGELOG
 
-21/01/2013
+21/01/2013 #2
+	Add whitespace after merged partitions.
+	Align output after merged partitions
+
+21/01/2013 #1
 	Improve cmdline parsing
 	Change writing space in merged partitions.
 
