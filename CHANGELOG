@@ -1,5 +1,9 @@
 CHANGELOG
 
+21/01/2013 #
+	Fix adding way to much whitespace
+	Update Readme
+
 21/01/2013 #2
 	Add whitespace after merged partitions.
 	Align output after merged partitions

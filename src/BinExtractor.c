@@ -319,7 +319,7 @@ int splitBinFile(const char* path)
         if(merged && addWhitespace)
         {
             int curGPTE = -1;
-            int curLBA = aph.pent_arr[i].disk_off + aph.pent_arr[i].file_off;
+            int curLBA = aph.pent_arr[i].disk_off + aph.pent_arr[i].file_size;
 
             /*FIND CORROSPONDING GPT ENTRY*/
             for(j = 0; j < gpt.pent_num; j++)
