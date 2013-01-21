@@ -1,5 +1,9 @@
 CHANGELOG
 
+21/01/2013
+	Improve cmdline parsing
+	Change writing space in merged partitions.
+
 20/01/2013 #3
 	Revamp reading 44 DD 55 AA APHeader
 	Add Ability to extract header

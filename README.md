@@ -14,8 +14,8 @@ If there isn't support for your phone just ask. I'll be glad to include it. As I
 - The first meg of the firmware file</br>
  - It is rare that I can actually download the very large firmware files so this is important</br>
  - Any hosting site will be sufficient. You can also post in the thread and attach the file there.
-- Your phone partition info
-	    -the output from 'cat /proc/partitions' is usually sufficient
+- Your phone partition info</br>
+ - the output from 'cat /proc/partitions' is usually sufficient
 - All known partition starting points within the file.
 
 You should also be prepared for some correspondence so I can use you to test if it actually works. I am doing it for you after all.
@@ -30,15 +30,14 @@ This tool is pretty picky when it comes to magic checking. I'll add support for 
  - P940
 
 #####TOT:
-- Optimus G (Sprint,AT&T)
+- Optimus G (Sprint,AT&T,Bell)
 - Nexus 4
 
 ##TESTING/PLANNED NEAR FUTURE
 - P990
-- Optimus G (Bell)
 
 ##CONTACT INFO
-E-Mail : xonar.leroux@gmail.com<br />
+E-Mail : xonar.leroux@gmail.com</br>
 XDA	: http://forum.xda-developers.com/member.php?u=4669225
 
 If you want common info then please ask it on the thread and don't message me directly.

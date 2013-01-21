@@ -19,15 +19,13 @@
 int main(int argc, char* args[])
 {
     /*REMOVE FIRST ARG IF ITS EXECUTION PATH*/
-    if(argc > 0)
+    if(argc > 0 && **args != '-')
     {
-        if(strcasecmp(PROG_NAME, args[0] + strlen(args[0]) - strlen(PROG_NAME)) == 0)
-        {
-            argc--;
-            args++;
-        }
+        argc--;
+        args++;
     }
 
+    /*PARSE CMDLINE*/
     if(argc == 2)
     {
         if(strcmp("-ebh", args[0]) == 0)
@@ -207,7 +205,7 @@ int splitBinFile(const char* path)
         /*WRITE FILE TO CUR DIR*/
         char* name, buff[512];
         FILE* out;
-        int len = 0, start;
+        int len = 0;
 
         name = calloc(512, sizeof(char));
 
@@ -244,8 +242,6 @@ int splitBinFile(const char* path)
             fwrite(buff, sizeof(char), 512, out);
         }
 
-        start = tmp.pent_arr[i].disk_off;
-
         parts[cur]--;
 
         while((parts[cur]--) > 0)
@@ -255,7 +251,16 @@ int splitBinFile(const char* path)
             printf("\n\t\tAppending to File");
 
             fseek(f, tmp.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
-            fseek(out, (tmp.pent_arr[i].disk_off - start) * 512, SEEK_SET);
+
+            /*ADD ACTUAL WHITESPACE AND NOT META DATA*/
+            for(j = 0;j<512;j++)
+                buff[j]='\0';
+
+            for(j = 0;j < tmp.pent_arr[i].disk_off - tmp.pent_arr[i-1].disk_off - tmp.pent_arr[i-1].file_size ;j++)
+            {
+                fwrite(buff,sizeof(char),512,out);
+            }
+            /*EOF - ADD ACTUAL WHITESPACE AND NOT META DATA*/
 
             for(j = 0; j < tmp.pent_arr[i].file_size; j++)
             {
