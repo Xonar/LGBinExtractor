@@ -335,7 +335,7 @@ int splitBinFile(const char* path)
             for(j = 0; j < 512; j++)
                 buff[j] = '\0';
 
-            for(j = 0; j < pes[curGPTE].last_lba - curLBA; j++)
+            for(j = 0; j <= pes[curGPTE].last_lba - curLBA; j++)
             {
                 fwrite(buff, sizeof(char), 512, out);
             }
