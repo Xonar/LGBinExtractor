@@ -1,6 +1,12 @@
 CHANGELOG
 
-21/01/2013 #
+23/01/2013
+	Added Makefile
+
+22/01/2013
+	Fix adding 1 to little LBA of whitespace
+
+21/01/2013 #3
 	Fix adding way to much whitespace
 	Update Readme
 
