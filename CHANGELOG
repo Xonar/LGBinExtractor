@@ -1,6 +1,12 @@
 CHANGELOG
 
-30/03/2013
+30/03/2013 #3
+	Added support for Motion 4G
+
+30/03/2013 #2
+	Added support for Optimus G
+
+30/03/2013 #1
 	Added DEBUG prints
 
 23/01/2013
@@ -21,11 +27,11 @@ CHANGELOG
 	Improve cmdline parsing
 	Change writing space in merged partitions.
 
-20/01/2013 #3
+20/01/2013 #4
 	Revamp reading 44 DD 55 AA APHeader
 	Add Ability to extract header
 
-20/01/2013 #2
+20/01/2013 #3
 	Add support for P940
 
 20/01/2013 #2

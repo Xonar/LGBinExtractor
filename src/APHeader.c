@@ -210,15 +210,48 @@ APHeader readAPHeader44DD55AA(FILE *f)
 
     if(out.magic.next->off == 0x2000)
     {
-        curDataBlock->next = malloc(sizeof(DataBlock));
-        curDataBlock = curDataBlock->next;
-        curDataBlock->blockOff = 0x2404;
-        curDataBlock->blockSize = 0x14;
-
-        curDataBlock->numItems = 1;
-        curDataBlock->items = calloc(sizeof(Item), 1);
-        curDataBlock->items[0].type = BLOCK_NAME;
-        curDataBlock->items[0].size = 0x14;
+    	/*CHECK FOR THIRD MAGIC NUM AT 0x4000*/
+    	fseek(f, 0x4000, SEEK_SET);
+    	fread(&tmp, sizeof(uint32_t), 1, f);
+    	
+    	if(tmp!=0xffffffff)
+    	{
+			/*FOUND MAGIC NUM*/
+			curMagicNum->next = malloc(sizeof(MagicNumber));
+			curMagicNum = curMagicNum->next;
+			curMagicNum->magic = tmp;
+			curMagicNum->off = 0x4000;
+			
+			switch(curMagicNum->magic)
+			{
+			case 0x56781234:
+				curDataBlock->next = malloc(sizeof(DataBlock));
+				curDataBlock = curDataBlock->next;
+				curDataBlock->blockOff = 0x4220;
+				curDataBlock->blockSize = 0x20;
+				    		
+				curDataBlock->numItems = 1;
+				curDataBlock->items = calloc(sizeof(Item), 1);
+				curDataBlock->items[0].type = BLOCK_NAME;
+				curDataBlock->items[0].size = 0x20;
+				break;
+			default:
+				goto failed;
+			}
+    	}
+    	else
+    	{
+			curDataBlock->next = malloc(sizeof(DataBlock));
+			curDataBlock = curDataBlock->next;
+			curDataBlock->blockOff = 0x2404;
+			curDataBlock->blockSize = 0x14;
+    		
+			curDataBlock->numItems = 1;
+			curDataBlock->items = calloc(sizeof(Item), 1);
+			curDataBlock->items[0].type = BLOCK_NAME;
+			curDataBlock->items[0].size = 0x14;
+    	}
+    	
         goto readBlocks;
     }
 
