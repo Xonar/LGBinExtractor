@@ -197,6 +197,10 @@ int splitBinFile(const char* path)
             c = getchar();
             while(getchar() != '\n')
                 ;
+            
+#if DEBUG
+            fprintf(stderr,"Input Char : '%c'\n",c);
+#endif
 
             if(c == 'y' || c == 'Y')
             {
@@ -236,6 +240,15 @@ int splitBinFile(const char* path)
             break;
         }
     }
+    
+#if DEBUG
+    int k = 0;
+    puts("");
+    for(;k<aph.pent_num && parts[k]!=0;k++)
+    {
+    	fprintf(stderr,"Part %d : %d\n",k,parts[k]);
+    }
+#endif
 
     puts("\nWriting Files...");
 

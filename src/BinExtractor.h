@@ -14,6 +14,8 @@
 #define PROG_NAME "BinExtractor"
 #endif
 
+#define DEBUG 0
+
 int displayGPT(const char* path);
 int displayAP(const char* path);
 int splitBinFile(const char* path);

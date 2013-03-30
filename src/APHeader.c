@@ -157,18 +157,19 @@ APHeader readAPHeader44DD55AA(FILE *f)
             printf("Did not detect known magic numbers!\n"
                     "  The File Appears to be a TOT File.All known TOT Files\n"
                     "  have the same format with different magic numbers.\n"
-                    "  Do you want to assume that and try? Y/N");
+                    "  Do you want to assume that and try? Y/N : ");
 
             scanf("%s", buf);
 
-            if(buf[0] == 'Y' || buf[0] == 'y') goto tot;
-            else break;
+            if(!(buf[0] == 'Y' || buf[0] == 'y')) break;
 
         case 0x8978f62b:
         case 0x5062c8ea:
         case 0x49838b94:
         case 0xdebf33af:
-            tot: curDataBlock->next = malloc(sizeof(DataBlock));
+        case 0x42ef4e39:
+        	/*tot*/
+            curDataBlock->next = malloc(sizeof(DataBlock));
             curDataBlock = curDataBlock->next;
             curDataBlock->blockOff = 0x4220;
             curDataBlock->blockSize = 0x20;
