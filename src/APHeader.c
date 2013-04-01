@@ -20,6 +20,9 @@ APHeader readAPHeader(FILE *f)
     /*PASS TO CORRECT FUNCTION BASED ON MAGIC NUMBER*/
     switch(*magic)
     {
+    	case 0xaa55ec44:
+    		out = readAPHeader44EC55AA(f);
+    		break;
         case 0xaa55a5a5:
             out = readAPHeaderA5A555AA(f);
             break;
@@ -34,6 +37,52 @@ APHeader readAPHeader(FILE *f)
     }
 
     return out;
+}
+
+APHeader readAPHeader44EC55AA(FILE *f)
+{
+	APHeader out;
+	int i = 0;
+	
+	INIT_APHEADER(out);
+	
+	out.magic.magic=0xaa55ec44;
+	
+	/*COUNT AND ALLOCATE AP ENTRIES*/
+	while(1)
+	{
+	    uint64_t tmp;
+	    fread(&tmp, sizeof(tmp), 1, f);
+	    if(tmp == UINT64_MAX) break;
+	    else out.pent_num++;
+	}
+	
+	fseek(f, 4, SEEK_SET);
+
+	out.pent_arr = (APPartitionEntry*) calloc(out.pent_num, sizeof(APPartitionEntry));
+
+	/*READ DISK OFFSET AND FILE SIZE*/
+	for(; i < out.pent_num; i++)
+	{
+	    fread(&out.pent_arr[i].disk_off, sizeof(uint32_t), 1, f);
+	    fread(&out.pent_arr[i].file_size, sizeof(uint32_t), 1, f);
+	}
+	
+	/*READ ID, DISK SIZE AND NAME*/
+	fseek(f, 0x200,SEEK_SET);
+	
+	for(i = 0 ; i < out.pent_num; i++)
+	{
+		 fread(&out.pent_arr[i].pent_id,sizeof(uint32_t),1,f);
+		 fread(&out.pent_arr[i].disk_size, sizeof(uint32_t), 1, f);
+		 fseek(f, 0x4, SEEK_CUR);
+		 fread(&out.pent_arr[i].name, sizeof(char), 0x14, f);
+		 fseek(f, 0x1e0, SEEK_CUR);
+		 
+		 out.pent_arr[i].file_off=0xffffffff;
+	}
+	
+	return out;
 }
 
 APHeader readAPHeaderA5A555AA(FILE *f)
@@ -70,7 +119,7 @@ APHeader readAPHeaderA5A555AA(FILE *f)
     /*READ DISK SIZE IGNORING FIRST ID REFERENCE*/
     for(i = 0; i < out.pent_num; i++)
     {
-        /*fread(&out.pent_arr[i].pent_id,sizeof(char),1,f);*/
+        /*fread(&out.pent_arr[i].pent_id,sizeof(uint32_t),1,f);*/
         fseek(f, 4, SEEK_CUR);
         fread(&out.pent_arr[i].disk_size, sizeof(uint32_t), 1, f);
         fseek(f, 504, SEEK_CUR);
@@ -358,9 +407,14 @@ void printAPPartitionEntry(const APPartitionEntry pe, FILE *f)
     fprintf(f, "PARTITION ENTRY\n------------\n"
             "    %-26s%s\n"
             "    %-26s%d\n"
-            "    %-26s%" PRIu32 "\n"
-    "    %-26s%" PRIu32 "\n", "Data Block Name", pe.name, "Data Block ID", pe.pent_id,
-            "Size on File", pe.file_size, "File Offset", pe.file_off);
+            "    %-26s%" PRIu32 "\n",
+            "Data Block Name", pe.name, "Data Block ID", pe.pent_id,
+            "Size on File", pe.file_size);
+    
+    if(pe.file_off != 0xFFFFFFFF)
+    {
+            fprintf(f, "    %-26s%" PRIu32 "\n", "File Offset", pe.file_off);
+    }
 
     if(pe.disk_size != 0xFFFFFFFF)
     {

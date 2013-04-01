@@ -7,11 +7,15 @@ LD=gcc
 LDFLAGS=
 
 SOURCE=src/APHeader.c src/BinExtractor.c src/GPT.c
-OBJECTS=build/APHeader.o build/BinExtractor.o build/GPT.o
+DIR=build
+OBJECTS=$(DIR)/APHeader.o $(DIR)/BinExtractor.o $(DIR)/GPT.o
 
 EXECUTABLE=BinExtractor
 
-all: $(OBJECTS) $(EXECUTABLE)
+all: $(DIR) $(OBJECTS) $(EXECUTABLE)
+
+$(DIR):
+	test -d $(DIR) || mkdir $(DIR)
 
 build/BinExtractor.o: src/GPT.h src/BinExtractor.h src/APHeader.h src/BinExtractor.c
 	$(CC) $(CFLAGS) src/BinExtractor.c -o build/BinExtractor.o

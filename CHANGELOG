@@ -1,10 +1,15 @@
 CHANGELOG
 
+01/04/2013
+	Add support for LG Lucid
+	Fix Readme mistake
+	Fix Makefile mistake
+
 30/03/2013 #3
 	Added support for Motion 4G
 
 30/03/2013 #2
-	Added support for Optimus G
+	Added support for Optimus G Pro
 
 30/03/2013 #1
 	Added DEBUG prints

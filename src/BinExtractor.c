@@ -251,6 +251,9 @@ int splitBinFile(const char* path)
 #endif
 
     puts("\nWriting Files...");
+    
+    /*Incase offset is not defined*/
+    fseek(f, 0x100000, SEEK_SET);
 
     /*WRITE FILES*/
     for(i = 0; i < aph.pent_num; i++)
@@ -284,7 +287,10 @@ int splitBinFile(const char* path)
         sprintf(name, "%d-%s.img", aph.pent_arr[i].pent_id, aph.pent_arr[i].name);
 
         out = fopen(name, "wb");
-        fseek(f, aph.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
+        
+        /*If file_off is not defined assume that it start after previous one ends*/
+        if(aph.pent_arr[i].file_off != 0xffffffff)
+        	fseek(f, aph.pent_arr[i].file_off * 512 + 0x100000, SEEK_SET);
 
         printf("\tWriting File : %-20s", name);
         fflush(stdout);

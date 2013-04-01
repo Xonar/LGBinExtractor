@@ -86,6 +86,7 @@ typedef struct _DataBlock
 APHeader readAPHeader(FILE *f);
 
 APHeader readAPHeader44DD55AA(FILE *f);
+APHeader readAPHeader44EC55AA(FILE *f);
 APHeader readAPHeaderA5A555AA(FILE *f);
 
 /*DISPLAY*/
