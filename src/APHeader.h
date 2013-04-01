@@ -16,7 +16,7 @@
 /*PARTITION ENTRY STRUCT*/
 typedef struct _APPartitionEntry
 {
-    char name[256];
+    char name[257];/*256 + 1 for terminating char*/
     uint32_t pent_id;
     uint32_t file_off;
     uint32_t file_size;

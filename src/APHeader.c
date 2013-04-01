@@ -77,6 +77,7 @@ APHeader readAPHeader44EC55AA(FILE *f)
 		 fread(&out.pent_arr[i].disk_size, sizeof(uint32_t), 1, f);
 		 fseek(f, 0x4, SEEK_CUR);
 		 fread(&out.pent_arr[i].name, sizeof(char), 0x14, f);
+		 out.pent_arr[i].name[0x14]='\0';
 		 fseek(f, 0x1e0, SEEK_CUR);
 		 
 		 out.pent_arr[i].file_off=0xffffffff;
@@ -132,6 +133,7 @@ APHeader readAPHeaderA5A555AA(FILE *f)
     {
         fread(&out.pent_arr[i].pent_id, sizeof(uint32_t), 1, f);
         fread(&out.pent_arr[i].name, sizeof(char), 256, f);
+        out.pent_arr[i].name[256]='\0';
         out.pent_arr[i].disk_off = 0xFFFFFFFF;
     }
 
@@ -363,6 +365,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
                         break;
                     case BLOCK_NAME:
                         fread(&out.pent_arr[i].name, sizeof(char), curDataBlock->items[j].size, f);
+                        out.pent_arr[i].name[curDataBlock->items[j].size]='\0';
                         break;
                     case SKIP:
                         fseek(f, curDataBlock->items[j].size, SEEK_CUR);
