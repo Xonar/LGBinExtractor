@@ -61,10 +61,11 @@ APHeader readAPHeader44EC55AA(FILE *f)
 
 	out.pent_arr = (APPartitionEntry*) calloc(out.pent_num, sizeof(APPartitionEntry));
 
-	/*READ DISK OFFSET AND FILE SIZE*/
+	/*READ FILE OFFSET AND FILE SIZE*/
 	for(; i < out.pent_num; i++)
 	{
-	    fread(&out.pent_arr[i].disk_off, sizeof(uint32_t), 1, f);
+	    fread(&out.pent_arr[i].file_off, sizeof(uint32_t), 1, f);
+	    out.pent_arr[i].disk_off = out.pent_arr[i].file_off;
 	    fread(&out.pent_arr[i].file_size, sizeof(uint32_t), 1, f);
 	}
 	
@@ -79,8 +80,6 @@ APHeader readAPHeader44EC55AA(FILE *f)
 		 fread(&out.pent_arr[i].name, sizeof(char), 0x14, f);
 		 out.pent_arr[i].name[0x14]='\0';
 		 fseek(f, 0x1e0, SEEK_CUR);
-		 
-		 out.pent_arr[i].file_off=0xffffffff;
 	}
 	
 	return out;

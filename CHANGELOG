@@ -1,6 +1,9 @@
 CHANGELOG
 
-01/04/2013
+01/04/2013 #2
+	Don't assume strings are null terminated
+
+01/04/2013 #1
 	Add support for LG Lucid
 	Fix Readme mistake
 	Fix Makefile mistake
