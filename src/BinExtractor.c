@@ -134,7 +134,8 @@ int displayAP(const char* path)
 
     if(tmp.pent_num == 0)
     {
-        fprintf(stderr, "No Data to Write!\n");
+        fprintf(stderr, "DISPLAYING INCOMPLETE APHEADER!\n\n");
+        printAPHeader(tmp, stdout);
         return -1;
     }
 

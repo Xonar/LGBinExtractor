@@ -1,5 +1,11 @@
 CHANGELOG
 
+03/05/2013
+	Improved APHeader display on failed read
+
+05/04/2013
+	Fix reading 44 EC 55 AA header
+
 01/04/2013 #2
 	Don't assume strings are null terminated
 
