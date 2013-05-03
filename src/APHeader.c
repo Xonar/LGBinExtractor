@@ -166,7 +166,6 @@ APHeader readAPHeader44DD55AA(FILE *f)
 
         if (tmp != 0xffffffff)
         {
-            fprintf(stderr, "FOUND MAGIC NUM %x @ %x!\n", tmp, i);
             /*FOUND MAGIC NUM*/
             curMagicNum->next = malloc(sizeof(MagicNumber));
             curMagicNum = curMagicNum->next;
@@ -224,6 +223,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
         case 0xdebf33af:
         case 0x42ef4e39:
         case 0x0e65f034:
+        case 0x95f57d8c:
             /*tot*/
             curDataBlock->next = malloc(sizeof(DataBlock));
             curDataBlock = curDataBlock->next;
