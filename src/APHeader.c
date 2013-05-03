@@ -93,6 +93,18 @@ APHeader readAPHeaderA5A555AA(FILE *f)
 
     INIT_APHEADER(out);
 
+    _Bool alternate = 0;
+
+    /*DETERMINE ALTERNATE A5A555AA*/
+    {
+        char tmp;
+        fseek(f,0x20c,SEEK_SET);
+        fread(&tmp, sizeof(tmp), 1, f);
+        if ((tmp >= 'A' && tmp <= 'Z') || (tmp >= 'a' && tmp <= 'z')
+                || (tmp >= '0' && tmp <= '9')) alternate = 1;
+        fseek(f, 4, SEEK_SET);
+    }
+
     out.magic.magic = 0xaa55a5a5;
 
     /*COUNT AND ALLOCATE AP ENTRIES*/
@@ -121,16 +133,31 @@ APHeader readAPHeaderA5A555AA(FILE *f)
     /*READ DISK SIZE IGNORING FIRST ID REFERENCE*/
     for (i = 0; i < out.pent_num; i++)
     {
-        /*fread(&out.pent_arr[i].pent_id,sizeof(uint32_t),1,f);*/
-        fseek(f, 4, SEEK_CUR);
-        fread(&out.pent_arr[i].disk_size, sizeof(uint32_t), 1, f);
-        fseek(f, 504, SEEK_CUR);
+        if (!alternate)
+        {
+            /*fread(&out.pent_arr[i].pent_id,sizeof(uint32_t),1,f);*/
+            fseek(f, 4, SEEK_CUR);
+            fread(&out.pent_arr[i].disk_size, sizeof(uint32_t), 1, f);
+            fseek(f, 504, SEEK_CUR);
+        }
+        /*ALTERNATIVE*/
+        else
+        {
+            fread(&out.pent_arr[i].pent_id, sizeof(uint32_t), 1, f);
+            fread(&out.pent_arr[i].disk_size, sizeof(uint32_t), 1, f);
+            fseek(f, 4, SEEK_CUR);
+            fread(&out.pent_arr[i].name, sizeof(char), 20, f);
+            fseek(f, 480, SEEK_CUR);
+            out.pent_arr[i].name[256] = '\0';
+            out.pent_arr[i].disk_off = 0xFFFFFFFF;
+        }
+        /*END OF ALTERNATIVE*/
     }
 
     fseek(f, 0x2200, SEEK_SET);
 
     /*READ ID AND NAME AND SET DISK OFF*/
-    for (i = 0; i < out.pent_num; i++)
+    if (!alternate) for (i = 0; i < out.pent_num; i++)
     {
         fread(&out.pent_arr[i].pent_id, sizeof(uint32_t), 1, f);
         fread(&out.pent_arr[i].name, sizeof(char), 256, f);
