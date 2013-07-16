@@ -442,6 +442,8 @@ APHeader readAPHeader44DD55AA(FILE *f)
                     fread(&out.pent_arr[i].name, sizeof(char),
                             curDataBlock->items[j].size, f);
                     out.pent_arr[i].name[curDataBlock->items[j].size] = '\0';
+                    if(out.pent_arr[i].name[0]==0xff)
+                      out.pent_arr[i].name = "__BADNAME__";
                     break;
                 case SKIP:
                     fseek(f, curDataBlock->items[j].size, SEEK_CUR);
