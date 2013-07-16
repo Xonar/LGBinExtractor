@@ -290,6 +290,30 @@ APHeader readAPHeader44DD55AA(FILE *f)
             goto readBlocks;
         }
 
+    if (out.magic.next->off == 0x2a0 && out.magic.next->next->off == 0x2b0 &&
+        out.magic.next->next->next->off == 0x4a0 && out.magic.next->next->next->next->off == 0x4b0)
+    {
+        if (out.magic.next->magic == 0xff01ffff && out.magic.next->next->magic == 0x48ffffff &&
+            out.magic.next->next->next->magic == 0xfffcffff && out.magic.next->next->next->next->magic == 0x87ffffff)
+        {
+            curDataBlock->next = malloc(sizeof(DataBlock));
+            curDataBlock = curDataBlock->next;
+            curDataBlock->blockOff = 0x80060;
+            curDataBlock->blockSize = 0x140;
+
+            printf("MARK\n");
+            
+            curDataBlock->numItems = 2;
+            curDataBlock->items = calloc(sizeof(Item), 2);
+            curDataBlock->items[0].type = SKIP;
+            curDataBlock->items[0].size = 0x100;
+            curDataBlock->items[1].type = BLOCK_NAME;
+            curDataBlock->items[1].size = 0x40;
+
+            goto readBlocks;
+        }
+    }
+
     if (out.magic.next->off == 0x2000)
     {
         printf("%x %x\n", out.magic.next->magic, out.magic.next->off);
