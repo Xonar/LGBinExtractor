@@ -6,6 +6,7 @@
  */
 
 #include "APHeader.h"
+#include <string.h>
 
 APHeader readAPHeader(FILE *f)
 {
@@ -301,8 +302,6 @@ APHeader readAPHeader44DD55AA(FILE *f)
             curDataBlock->blockOff = 0x80060;
             curDataBlock->blockSize = 0x140;
 
-            printf("MARK\n");
-            
             curDataBlock->numItems = 2;
             curDataBlock->items = calloc(sizeof(Item), 2);
             curDataBlock->items[0].type = SKIP;
@@ -442,8 +441,8 @@ APHeader readAPHeader44DD55AA(FILE *f)
                     fread(&out.pent_arr[i].name, sizeof(char),
                             curDataBlock->items[j].size, f);
                     out.pent_arr[i].name[curDataBlock->items[j].size] = '\0';
-                    if(out.pent_arr[i].name[0]==0xff)
-                      out.pent_arr[i].name = "__BADNAME__";
+                    if(out.pent_arr[i].name[0]==(char)0xff)
+                      strcpy(out.pent_arr[i].name,"__BADNAME__");
                     break;
                 case SKIP:
                     fseek(f, curDataBlock->items[j].size, SEEK_CUR);
