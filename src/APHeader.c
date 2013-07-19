@@ -241,9 +241,12 @@ APHeader readAPHeader44DD55AA(FILE *f)
                     "  have the same format with different magic numbers.\n"
                     "  Do you want to assume that and try? Y/N : ");
 
-            scanf("%s", buf);
+            char c;
+            c = getchar();
+            while(getchar() != '\n')
+                ;
 
-            if (!(buf[0] == 'Y' || buf[0] == 'y')) break;
+            if (!(c == 'Y' || c == 'y')) break;
 
         case 0x8978f62b:
         case 0x5062c8ea:
