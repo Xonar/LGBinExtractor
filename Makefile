@@ -1,7 +1,7 @@
 #Make file for BinExtractor
 
 CC=gcc
-CFLAGS=-c -g -Wall -Wno-unused-result -Wno-strict-aliasing -O2
+CFLAGS=-c -Wall -std=c89 -pedantic -Wno-unused-result -Wno-strict-aliasing -O2
 
 LD=gcc
 LDFLAGS=
