@@ -91,10 +91,10 @@ APHeader readAPHeaderA5A555AA(FILE *f)
 {
     APHeader out;
     int i = 0;
+    _Bool alternate = 0;
 
     INIT_APHEADER(out);
 
-    _Bool alternate = 0;
 
     /*DETERMINE ALTERNATE A5A555AA*/
     {
@@ -174,6 +174,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     APHeader out;
     int i = 4, j;
     char buf[512];
+    char c;
 
     DataBlock dataBlock, *curDataBlock;
     MagicNumber *curMagicNum;
@@ -241,7 +242,6 @@ APHeader readAPHeader44DD55AA(FILE *f)
                     "  have the same format with different magic numbers.\n"
                     "  Do you want to assume that and try? Y/N : ");
 
-            char c;
             c = getchar();
             while(getchar() != '\n')
                 ;
