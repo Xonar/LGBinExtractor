@@ -255,6 +255,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
         case 0x42ef4e39:
         case 0x0e65f034:
         case 0x95f57d8c:
+	case 0x729092c9:
             /*tot*/
             curDataBlock->next = malloc(sizeof(DataBlock));
             curDataBlock = curDataBlock->next;
