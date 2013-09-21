@@ -319,7 +319,6 @@ APHeader readAPHeader44DD55AA(FILE *f)
 
     if (out.magic.next->off == 0x2000)
     {
-        printf("%x %x\n", out.magic.next->magic, out.magic.next->off);
         /*CHECK FOR THIRD MAGIC NUM AT 0x4000*/
         fseek(f, 0x4000, SEEK_SET);
         fread(&tmp, sizeof(uint32_t), 1, f);
