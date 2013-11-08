@@ -246,7 +246,6 @@ APHeader readAPHeader44DD55AA(FILE *f)
       while(getchar() != '\n');
 
       if (!(c == 'Y' || c == 'y')) break;
-
     case 0x8978f62b:
     case 0x5062c8ea:
     case 0x49838b94:
@@ -254,11 +253,24 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0x42ef4e39:
     case 0x0e65f034:
     case 0x95f57d8c:
-  case 0x729092c9:
+    case 0x729092c9:
       /*tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
       curDataBlock->blockOff = 0x4220;
+      curDataBlock->blockSize = 0x20;
+
+      curDataBlock->numItems = 1;
+      curDataBlock->items = calloc(sizeof(Item), 1);
+      curDataBlock->items[0].type = BLOCK_NAME;
+      curDataBlock->items[0].size = 0x20;
+
+      goto readBlocks;
+    case 0x416a35aa:
+      /* Nexus 5 tot*/
+      curDataBlock->next = malloc(sizeof(DataBlock));
+      curDataBlock = curDataBlock->next;
+      curDataBlock->blockOff = 0x6230;
       curDataBlock->blockSize = 0x20;
 
       curDataBlock->numItems = 1;
