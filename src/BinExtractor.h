@@ -2,7 +2,7 @@
  * BinExtractor.h
  *
  *  Created on: Nov 18, 2012
- *      Author: xonar
+ *    Author: xonar
  */
 
 #ifndef BINEXTRACTOR_H
