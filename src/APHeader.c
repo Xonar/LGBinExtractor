@@ -266,8 +266,8 @@ APHeader readAPHeader44DD55AA(FILE *f)
       curDataBlock->items[0].size = 0x20;
 
       goto readBlocks;
-    case 0x416a35aa:
-      /* Nexus 5 tot*/
+    case 0x832d52b3: // LG G2 TOT
+    case 0x416a35aa: // Nexus 5 TOT
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
       curDataBlock->blockOff = 0x6230;
