@@ -380,14 +380,30 @@ int splitBinFile(const char* path)
 int extractBinHeaderFile(const char* path)
 {
   char buf[512];
-
   int i = 0;
-  FILE* f = fopen(path, "rb");
+  FILE* f;
   FILE* out;
+  char isBinTot;
 
-  out = fopen("header.bin", "wb");
+  /*Check that file extension is bin/tot*/
+  i = strlen(path);
+  isBinTot = strcmp(path + i - 4, ".bin") == 0;
+  isBinTot |= (strcmp(path + i - 4, ".tot") == 0) << 1;
 
-  for(; i < 0x800; i++)
+  if(!isBinTot)
+  {
+    char* c = strrchr(path , '.');
+    if( c == NULL )
+      printf("No File Extension!\n");
+    else
+      printf("Invalid file type : %s\n", c);
+    return EXIT_FAILURE;
+  }
+
+  f = fopen(path, "rb");
+  out = fopen((isBinTot & 1) ? "header.bin" : "header.tot", "wb");
+
+  for(i = 0; i < 0x800; i++)
   {
     /*DO 512 BLOCK*/
     fread(buf, sizeof(char), 512, f);
