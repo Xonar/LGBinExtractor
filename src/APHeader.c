@@ -271,7 +271,8 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0x36e3f6db:
     case 0x0777622c:
     case 0x0e2dd7e9:
-      /* Nexus 5 tot*/
+    case 0xc2df3b1f:
+    /* Nexus 5 tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
       curDataBlock->blockOff = 0x6230;
