@@ -232,6 +232,33 @@ APHeader readAPHeader44DD55AA(FILE *f)
 
   curDataBlock = &dataBlock;
 
+  if(out.magic.next->off == 0x8 && out.magic.next->next->off == 0xC &&
+     out.magic.next->next->next->off == 0x10 && out.magic.next->next->next->next->off == 0x600 &&
+     out.magic.next->next->next->next->next->off == 0x2000)
+  {
+    printf("Only one know format with this magic layout.\nSkipping Magic Number Testing!\n");
+
+    curDataBlock->next = malloc(sizeof(DataBlock));
+    curDataBlock = curDataBlock->next;
+    curDataBlock->blockOff = 0x3000;
+    curDataBlock->blockSize = 0x200;
+    
+    curDataBlock->numItems = 5;
+    curDataBlock->items = calloc(sizeof(Item), 5);
+    curDataBlock->items[0].type = BLOCK_ID;
+    curDataBlock->items[0].size = 0x4;
+    curDataBlock->items[1].type = DISK_SIZE;
+    curDataBlock->items[1].size = 0x4;
+    curDataBlock->items[2].type = SKIP;
+    curDataBlock->items[2].size = 0x4;
+    curDataBlock->items[3].type = BLOCK_NAME;
+    curDataBlock->items[3].size = 0x14;
+    curDataBlock->items[4].type = SKIP;
+    curDataBlock->items[4].size = 0x1E0;
+
+    goto readBlocks;
+  }
+
   /*TOT FILES*/
   if (out.magic.next->off == 0x8 && out.magic.next->next->off == 0x2000)
     switch (out.magic.next->magic)
