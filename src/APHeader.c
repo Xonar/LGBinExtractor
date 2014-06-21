@@ -193,7 +193,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
   {
     fread(&tmp, sizeof(uint32_t), 1, f);
 
-    if (tmp != 0xffffffff)
+    if (tmp != 0xffffffff && tmp != 0x00000000)
     {
       /*FOUND MAGIC NUM*/
       curMagicNum->next = malloc(sizeof(MagicNumber));
