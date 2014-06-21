@@ -431,6 +431,8 @@ APHeader readAPHeader44DD55AA(FILE *f)
 
   readBlocks:
 
+  curDataBlock->next = NULL;
+
   /*COUNT AND ALLOCATE AP ENTRIES*/
   fseek(f, 0x2010, SEEK_SET);
 
