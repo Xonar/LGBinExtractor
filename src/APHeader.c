@@ -307,7 +307,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0x12568b19:
     case 0xc652db34:
     case 0xf282d8eb:
-    case 0xc4c4055a: //LG G2-Mini (D620)
+    case 0xc4c4055a: /* LG G2-Mini (D620) */
       /* Nexus 5 tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
