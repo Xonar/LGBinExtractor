@@ -308,6 +308,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0xc652db34:
     case 0xf282d8eb:
     case 0xc4c4055a: /* LG G2-Mini (D620) */
+    case 0x191c1a47: /* Verizon G3 (VS985 10B) */
       /* Nexus 5 tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
