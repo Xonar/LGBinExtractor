@@ -19,6 +19,7 @@
 int displayGPT(const char* path);
 int displayAP(const char* path);
 int splitBinFile(const char* path);
+int findMagic(const char* path);
 int extractBinHeaderFile(const char* path);
 
 void skipToNextLBA(FILE* f);
