@@ -283,6 +283,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0x729092c9:
     case 0x71b31218:
     case 0xcd5f070a:
+    case 0x4ac769ec: /* GPE Gtab 8.3 (V510) */
       /*tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
@@ -313,6 +314,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0x22d79b07: /* AT&T G3 (D850 V10) */
     case 0xa1ceedec: /* International G3 (D855 V10e) */
     case 0xe2c457ae: /* G Pro 2 (D838) */
+    case 0xd0bc5531: /* Verizon G2 (VS980 11A) */
       /* Nexus 5 tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
