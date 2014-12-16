@@ -283,6 +283,7 @@ APHeader readAPHeader44DD55AA(FILE *f)
     case 0x729092c9:
     case 0x71b31218:
     case 0xcd5f070a:
+    case 0x4ac769ec: /* GPE Gtab 8.3 (V510) */
       /*tot*/
       curDataBlock->next = malloc(sizeof(DataBlock));
       curDataBlock = curDataBlock->next;
