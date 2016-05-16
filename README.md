@@ -21,7 +21,7 @@ Don't keep it to yourself. Make a pull request.
 https://github.com/Xonar/LGBinExtractor/pull/new/master
 
 ###HALL OF HELPERS
- - novassoc : for his tool that extracts the kdz and wdb files.
+ - navossoc : for his tool that extracts the kdz and wdb files.
  - SnowLeopardJB : for lots and lots of testing
 
 ##Bugs
