@@ -61,6 +61,17 @@ int main(int argc, char* args[])
         return EXIT_FAILURE;
       }
     }
+    else if(strcmp("-find", args[0]) == 0)
+    {
+      if(canOpenFile(args[1]))
+      {
+        findMagic(args[1]);
+      }
+      else
+      {
+        return EXIT_FAILURE;
+      }
+    }
     else if(strcmp("-extract", args[0]) == 0)
     {
       if(canOpenFile(args[1]))
@@ -146,6 +157,23 @@ int displayAP(const char* path)
   fclose(f);
 
   return EXIT_SUCCESS;
+}
+
+int findMagic(const char* path) {
+    FILE* fd;
+    int i = 0;
+    unsigned char c[12];
+
+    fd = fopen(path, "r");
+
+    fseek(fd, 8, SEEK_SET);
+    for (; i < 4; i++) {
+      fread(&c[i], sizeof(c[0]), 1, fd);
+    }
+
+    printf("Found possible magic: 0x%x%x%x%x\n", c[3], c[2], c[1], c[0]);
+    fclose(fd);
+    return 0;
 }
 
 int splitBinFile(const char* path)
@@ -419,10 +447,10 @@ void printUsage()
 {
   /*PRINT USAGE*/
   printf(
-      "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n",
+      "BinExtractor - A tool for extracting LG Bin Firmware files\n\nUsage :\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n\t%-20s%s\n",
       "-daph file", "Display Header Information", "-dgpt file",
       "Display GPT Header Information", "-extract file", "Split Bin into Partitions",
-      "-ebh file", "Extract Bin Header from file");
+      "-ebh file", "Extract Bin Header from file", "-find file", "Attempt to find magic in file");
 }
 
 _Bool canOpenFile(const char* path)
