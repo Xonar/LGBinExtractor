@@ -13,7 +13,7 @@
 #include "APHeader.h"
 
 #include <dirent.h>
-#ifdef WIN32
+#ifdef _WIN32
   #include <string.h>
 #else
   #include <strings.h>
