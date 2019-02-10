@@ -13,7 +13,12 @@
 #include "APHeader.h"
 
 #include <dirent.h>
-#include <strings.h>
+#ifdef _WIN32
+  #include <string.h>
+#else
+  #include <strings.h>
+#endif // DEBUG
+
 #include <errno.h>
 
 int main(int argc, char* args[])
